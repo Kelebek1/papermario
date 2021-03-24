@@ -96,11 +96,11 @@ $(document).ready(function(){initNavTree('code__18F340_8c_source.html',''); init
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;    <a class="code" href="structBattleStatus.html">BattleStatus</a>* battleStatus = &amp;<a class="code" href="variables_8h.html#a868741f8e6341df467339ebc79f5623c">gBattleStatus</a>;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    <a class="code" href="structActor.html">Actor</a>* playerActor = battleStatus-&gt;<a class="code" href="structBattleStatus.html#ac13513d192a38510e3ac5e807da33d53">playerActor</a>;</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    s32 isImmobile = playerActor-&gt;<a class="code" href="structActor.html#ab84fcb7236d014ee361e69f0b26f3fab">debuff</a> == <a class="code" href="enums_8h.html#a4d4dc49b8a0c4e2edb98f55f9ea582a9">Debuff_FEAR</a></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;        || playerActor-&gt;<a class="code" href="structActor.html#ab84fcb7236d014ee361e69f0b26f3fab">debuff</a> == <a class="code" href="enums_8h.html#a44f0c4da0c9c7acb5a57fc1f15c031b1">Debuff_DIZZY</a></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;        || playerActor-&gt;<a class="code" href="structActor.html#ab84fcb7236d014ee361e69f0b26f3fab">debuff</a> == <a class="code" href="enums_8h.html#a1337a23b1f4babc5f34a66856aabb6eb">Debuff_PARALYZE</a></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;        || playerActor-&gt;<a class="code" href="structActor.html#ab84fcb7236d014ee361e69f0b26f3fab">debuff</a> == <a class="code" href="enums_8h.html#a98da45ff955d55c687858aab6c38de0b">Debuff_SLEEP</a></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;        || playerActor-&gt;<a class="code" href="structActor.html#ab84fcb7236d014ee361e69f0b26f3fab">debuff</a> == <a class="code" href="enums_8h.html#a83d44912aac9747730db409c0bec86c7">Debuff_FROZEN</a></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;        || playerActor-&gt;<a class="code" href="structActor.html#ab84fcb7236d014ee361e69f0b26f3fab">debuff</a> == <a class="code" href="enums_8h.html#ac883d065f4cf71e1a0cdb978e460f08b">Debuff_STOP</a>;</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;                     || playerActor-&gt;<a class="code" href="structActor.html#ab84fcb7236d014ee361e69f0b26f3fab">debuff</a> == <a class="code" href="enums_8h.html#a44f0c4da0c9c7acb5a57fc1f15c031b1">Debuff_DIZZY</a></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;                     || playerActor-&gt;<a class="code" href="structActor.html#ab84fcb7236d014ee361e69f0b26f3fab">debuff</a> == <a class="code" href="enums_8h.html#a1337a23b1f4babc5f34a66856aabb6eb">Debuff_PARALYZE</a></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;                     || playerActor-&gt;<a class="code" href="structActor.html#ab84fcb7236d014ee361e69f0b26f3fab">debuff</a> == <a class="code" href="enums_8h.html#a98da45ff955d55c687858aab6c38de0b">Debuff_SLEEP</a></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;                     || playerActor-&gt;<a class="code" href="structActor.html#ab84fcb7236d014ee361e69f0b26f3fab">debuff</a> == <a class="code" href="enums_8h.html#a83d44912aac9747730db409c0bec86c7">Debuff_FROZEN</a></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;                     || playerActor-&gt;<a class="code" href="structActor.html#ab84fcb7236d014ee361e69f0b26f3fab">debuff</a> == <a class="code" href="enums_8h.html#ac883d065f4cf71e1a0cdb978e460f08b">Debuff_STOP</a>;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keywordflow">if</span> (playerActor-&gt;<a class="code" href="structActor.html#a8bb46a5733c474a78f324fe785108cf4">stoneStatus</a> == 12) {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;        isImmobile = TRUE;</div>
@@ -331,7 +331,7 @@ $(document).ready(function(){initNavTree('code__18F340_8c_source.html',''); init
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="code__18F340_8c.html">code_18F340.c</a></li>
-    <li class="footer">Generated on Tue Mar 23 2021 18:10:59 for Paper Mario by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
+    <li class="footer">Generated on Wed Mar 24 2021 13:57:17 for Paper Mario by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.1 </li>
   </ul>
 </div>
 </body>
