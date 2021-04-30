@@ -893,9 +893,13 @@ typedef struct {
     s32 unk_38;
     char unk_3C[0xC];
     EffectUnkStruct1* unk_48;
-    char unk_4C[0x24];
+    char unk_4C[0x1C];
+    f32 unk_68;
+    char unk_6C[0x4];
     s32 unk_70;
     s32 unk_74;
+    f32 unk_78;
+    f32 unk_7C;
 } EffectInstanceDataThing;
 
 typedef struct Effect {

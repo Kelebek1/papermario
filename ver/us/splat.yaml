@@ -6247,15 +6247,11 @@ segments:
     start: 0xA10880
     vram: 0x80240000
     subsegments:
-    - [0xA10880, c]
-    - [0xA11020, c]
-    - [0xA11650, c]
-    - [0xA116A0, data]
-    - [0xA11760, data]
-    - [0xA12E00, data]
-    - [0xA15860, data]
-    - [0xA158D0, data]
-    - [0xA161F0, rodata]
+    - [0xA10880,       c, A10880]
+    - [0xA11020,       c, A11020]
+    - [0xA11650,       c, A11650]
+    - [0xA116A0,   .data, A10880]
+    - [0xA161F0, .rodata, A10880]
   - name: hos_02
     dir: world/area_hos/hos_02
     type: code
