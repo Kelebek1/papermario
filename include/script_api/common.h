@@ -301,6 +301,9 @@ ApiStatus func_802C90FC(ScriptInstance* script, s32 isInitialCall);
 ApiStatus func_802CFE80(ScriptInstance* script, s32 isInitialCall);
 ApiStatus func_802CFFC0(ScriptInstance* script, s32 isInitialCall);
 ApiStatus func_802C971C(ScriptInstance* script, s32 isInitialCall);
+ApiStatus func_802D1270(ScriptInstance* script, s32 isInitialCall);
+ApiStatus func_80111E9C(ScriptInstance* script, s32 isInitialCall);
+ApiStatus func_802D6340(ScriptInstance* script, s32 isInitialCall);
 
 extern Script EnemyNpcHit;
 extern Script EnemyNpcDefeat;

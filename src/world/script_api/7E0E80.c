@@ -11,17 +11,51 @@ ApiStatus func_80280410(ScriptInstance* script, s32 isInitialCall);
 ApiStatus ShowShopPurchaseDialog(ScriptInstance* script, s32 isInitialCall);
 ApiStatus ShowShopOwnerDialog(ScriptInstance* script, s32 isInitialCall);
 
-s32 D_80283E80_7E4D00[] = { 0x00000043, 0x00000006, SpeakToPlayer, 0xFE363C81, 0xFE363C82, 0xFE363C83, 0x00000000, 0xFE363C80, 0x00000002, 0x00000000, 0x00000001, 0x00000000, };
+Script D_80283E80_7E4D00 = SCRIPT({
+    SpeakToPlayer(SI_VAR(1), SI_VAR(2), SI_VAR(3), 0, SI_VAR(0));
+});
 
-s32 D_80283EB0_7E4D30[] = { 0x00000043, 0x00000006, ContinueSpeech, 0xFE363C81, 0xFE363C82, 0xFE363C83, 0x00000000, 0xFE363C80, 0x00000002, 0x00000000, 0x00000001, 0x00000000, };
+Script D_80283EB0_7E4D30 = SCRIPT({
+    ContinueSpeech(SI_VAR(1), SI_VAR(2), SI_VAR(3), 0, SI_VAR(0));
+});
 
-s32 D_80283EE0_7E4D60[] = { 0x00000043, 0x00000005, EndSpeech, 0xFE363C81, 0xFE363C82, 0xFE363C83, 0x00000000, 0x00000043, 0x00000006, SpeakToPlayer, 0xFE363C81, 0xFE363C82, 0xFE363C83, 0x00000000, 0xFE363C80, 0x00000002, 0x00000000, 0x00000001, 0x00000000, };
+Script D_80283EE0_7E4D60 
+= SCRIPT({
+    EndSpeech(SI_VAR(1), SI_VAR(2), SI_VAR(3), 0);
+    SpeakToPlayer(SI_VAR(1), SI_VAR(2), SI_VAR(3), 0, SI_VAR(0));
+});
 
-s32 D_80283F2C_7E4DAC[] = { 0x00000043, 0x00000005, EndSpeech, 0xFE363C80, 0xFE363C81, 0xFE363C82, 0x00000000, 0x00000002, 0x00000000, 0x00000001, 0x00000000, };
+Script D_80283F2C_7E4DAC = SCRIPT({
+    EndSpeech(SI_VAR(0), SI_VAR(1), SI_VAR(2), 0);
+});
 
-s32 D_80283F58_7E4DD8[] = { 0x00000043, 0x00000002, GetCurrentPartner, 0xFE363C81, 0x0000000A, 0x00000002, 0xFE363C81, 0x00000000, 0x00000004, 0x00000001, 0x0000000A, 0x00000013, 0x00000000, 0x0000000A, 0x00000002, 0xFE363C81, 0x00000002, 0x00000004, 0x00000001, 0x0000000A, 0x00000013, 0x00000000, 0x0000000A, 0x00000002, 0xFE363C81, 0x00000003, 0x00000004, 0x00000001, 0x0000000A, 0x00000013, 0x00000000, 0x00000002, 0x00000000, 0x00000003, 0x00000001, 0x0000000A, 0x00000043, 0x00000001, func_802803C8, 0x0000000A, 0x00000002, 0xFE363C82, 0x00000000, 0x00000002, 0x00000000, 0x00000013, 0x00000000, 0x00000043, 0x00000002, func_80280410, 0xFE363C80, 0x00000002, 0x00000000, 0x00000001, 0x00000000, };
+Script D_80283F58_7E4DD8 = SCRIPT({
+    GetCurrentPartner(SI_VAR(1));
+    if (SI_VAR(1) == 0) {
+        goto 10;
+    }
+    if (SI_VAR(1) == 2) {
+        goto 10;
+    }
+    if (SI_VAR(1) == 3) {
+        goto 10;
+    }
+    return;
+10:
+    func_802803C8();
+    if (SI_VAR(2) == 0) {
+        return;
+    }
+    func_80280410(SI_VAR(0));
+});
 
-s32 D_80284034_7E4EB4[] = { 0x00000043, 0x00000002, ShowShopPurchaseDialog, 0xFE363C80, 0x00000002, 0x00000000, 0x00000001, 0x00000000, 0x00000043, 0x00000001, ShowShopOwnerDialog, 0x00000002, 0x00000000, 0x00000001, 0x00000000, };
+Script D_80284034_7E4EB4 = SCRIPT({
+    ShowShopPurchaseDialog(SI_VAR(0));
+});
+
+Script D_80284054_7E4ED4 = SCRIPT({
+    ShowShopOwnerDialog();
+});
 
 s32 shop_owner_begin_speech(s32 messageIndex) {
     Shop* shop = gGameStatusPtr->mapShop;
@@ -298,7 +332,7 @@ INCLUDE_ASM(ApiStatus, "world/script_api/7E0E80", ShowShopOwnerDialog, ScriptIns
 void shop_draw_item_name(s32 arg0, s32 posX, s32 posY) {
     Shop* shop = gGameStatusPtr->mapShop;
     StaticInventoryItem* siItem = &shop->staticInventory[shop->currentItemSlot];
-    StaticItem* item = &gItemTable[siItem->unk_00];
+    StaticItem* item = &gItemTable[siItem->itemID];
 
     draw_msg(item->nameString, posX + 60 - (get_string_width(item->nameString, 0) >> 1), posY + 6, 255, 0, 0);
 }
@@ -307,7 +341,7 @@ void shop_draw_item_desc(s32 arg0, s32 posX, s32 posY) {
     Shop* shop = gGameStatusPtr->mapShop;
     StaticInventoryItem* item = &shop->staticInventory[shop->currentItemSlot];
 
-    draw_msg(item->unk_08, posX + 8, posY, 255, 0xA, 0);
+    draw_msg(item->descriptionID, posX + 8, posY, 255, 0xA, 0);
 }
 
 // Problems with the struct iteration

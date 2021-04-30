@@ -4,8 +4,8 @@
 glabel func_80240928_A1BA28
 /* A1BA28 80240928 27BDFFD8 */  addiu     $sp, $sp, -0x28
 /* A1BA2C 8024092C AFB10014 */  sw        $s1, 0x14($sp)
-/* A1BA30 80240930 3C118024 */  lui       $s1, %hi(D_80243BD4_A1ECD4)
-/* A1BA34 80240934 26313BD4 */  addiu     $s1, $s1, %lo(D_80243BD4_A1ECD4)
+/* A1BA30 80240930 3C118024 */  lui       $s1, %hi(hos_03_D_80243BD4_A1ECD4)
+/* A1BA34 80240934 26313BD4 */  addiu     $s1, $s1, %lo(hos_03_D_80243BD4_A1ECD4)
 /* A1BA38 80240938 AFBF0020 */  sw        $ra, 0x20($sp)
 /* A1BA3C 8024093C AFB3001C */  sw        $s3, 0x1c($sp)
 /* A1BA40 80240940 AFB20018 */  sw        $s2, 0x18($sp)

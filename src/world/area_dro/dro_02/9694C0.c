@@ -454,12 +454,7 @@ u8 N(quizAnswers)[] = {
     0x01, 0x02, 0x00, 0x02, 0x02, 0x01, 0x01, 0x01,
 };
 
-typedef struct {
-    s32 unk_00;
-    s32 unk_04;
-} N(quizReqStruct);
-
-N(quizReqStruct) N(quizRequirements)[] = {
+quizReqStruct N(quizRequirements)[] = {
     { -108, 0 }, { -76, 10 },
     { -54, 20 }, { -14, 30 },
     {   6, 37 }, {  39, 44 },

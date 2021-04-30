@@ -1344,8 +1344,8 @@ typedef struct ShopOwner {
     /* 0x00 */ s32 npcID;
     /* 0x04 */ s32 idleAnim;
     /* 0x08 */ s32 talkAnim;
-    /* 0x0C */ char unk_0C[0x4];
-    /* 0x10 */ Bytecode* unkScript;
+    /* 0x0C */ Bytecode* unkScript1;
+    /* 0x10 */ Bytecode* unkScript2;
     /* 0x14 */ char unk_14[0x4];
     /* 0x18 */ s32* shopStringIDs;
 } ShopOwner;
@@ -1356,9 +1356,9 @@ typedef struct ShopItemLocation {
 } ShopItemLocation; // size = 0x4
 
 typedef struct StaticInventoryItem {
-    /* 0x0 */ s32 unk_00;
+    /* 0x0 */ s32 itemID;
     /* 0x4 */ s32 price;
-    /* 0x8 */ s32 unk_08;
+    /* 0x8 */ s32 descriptionID;
 } StaticInventoryItem; // size = 0xC
 
 typedef struct StaticPriceItem {
@@ -1989,5 +1989,10 @@ typedef struct EntityModel {
 } EntityModel; // size = 0x68
 
 typedef EntityModel* EntityModelList[MAX_ENTITY_MODELS];
+
+typedef struct {
+    s32 unk_00;
+    s32 unk_04;
+} quizReqStruct;
 
 #endif

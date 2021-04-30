@@ -594,13 +594,10 @@ Script N(80244B80) = SCRIPT({
 
 #include "world/common/UnkTexturePanFunc2.inc.c"
 
-extern 
-extern 
-
 void N(func_8024030C_A1652C)(void) {
-    f32 temp_a1 = ((sins( N(D_802433AC_A195CC)) * 0.000030517578f) * 0.5 * 0.5) + 1.05;
+    f32 temp_a1 = ((sins(N(D_802433AC_A195CC)) * 0.000030517578f) * 0.5 * 0.5) + 1.05;
 
-     N(D_802433AC_A195CC) += 0x199;
+    N(D_802433AC_A195CC) += 0x199;
     guScale(&gDisplayContext->matrixStack[gMatrixListPos], temp_a1, temp_a1, temp_a1);
     
     gSPMatrix(gMasterGfxPos++, &gDisplayContext->matrixStack[gMatrixListPos++], G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
@@ -610,14 +607,14 @@ void N(func_8024030C_A1652C)(void) {
 // functions below this are the same weird thing
 
 typedef struct {
-    /* 0x00 */s16 unk_00;
-    /* 0x02 */s16 unk_02;
-    /* 0x04 */s16 unk_04;
-    /* 0x06 */char unk_06[0x6];
-    /* 0x0C */u8 unk_0C;
-    /* 0x0D */u8 unk_0D;
-    /* 0x0E */u8 unk_0E;
-    /* 0x0F */char unk_0F[0x1];
+    /* 0x00 */ s16 unk_00;
+    /* 0x02 */ s16 unk_02;
+    /* 0x04 */ s16 unk_04;
+    /* 0x06 */ char unk_06[0x6];
+    /* 0x0C */ u8 unk_0C;
+    /* 0x0D */ u8 unk_0D;
+    /* 0x0E */ u8 unk_0E;
+    /* 0x0F */ char unk_0F[0x1];
 } N(UnkStruct); // size = 0x10
 
 void N(func_80240434_A16654)(void) {
@@ -649,7 +646,7 @@ void N(func_80240434_A16654)(void) {
     }
 
     gSPDisplayList(gMasterGfxPos++, func_8011C2EC(0));
-     N(D_802433AE_A195CE) += 0x253;
+    N(D_802433AE_A195CE) += 0x253;
 }
 #else
 INCLUDE_ASM(void, "world/area_hos/hos_02/A16220", hos_02_func_80240434_A16654, void);

@@ -185,6 +185,10 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
             else:
                 out += script_text
 
+        ############################################
+        #   Script setup
+        ############################################
+
         elif struct["type"] == "EntryList":
             entry_list_name = name
             out += f"EntryList {name} = {{"
@@ -209,6 +213,38 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
                 out += f"\n    {{ {a:>{x_size}}f, {b:>{y_size}}f, {c:>{z_size}}f, {d:>{w_size}}f }},"
 
             out += f"\n}};\n"
+
+        elif struct["type"] == "Header":
+            out += f"MapConfig N(config) = {{\n"
+
+            bytes.read(0x10)
+
+            main,entry_list,entry_count = unpack(">IIi", bytes.read(4 * 3))
+            print(hex(main))
+            if main != 0:
+                out += f"    .main = &N(main),\n"
+            if entry_list != 0:
+                out += f"    .entryList = &{entry_list_name},\n"
+                out += f"    .entryCount = ENTRY_COUNT({entry_list_name}),\n"
+
+            bytes.read(0x1C)
+
+            bg,tattle = unpack(">II", bytes.read(4 * 2))
+            if bg == 0x80200000:
+                out += f"    .background = &gBackgroundImage,\n"
+            elif bg != 0:
+                raise Exception(f"unknown MapConfig background {bg:X}")
+            if tattle != 0:
+                INCLUDES_NEEDED["tattle"].append(f"- [0x{(tattle & 0xFF0000) >> 16:02X}, 0x{tattle & 0xFFFF:04X}, {map_name}_tattle]")
+                out += f"    .tattle = {{ MSG_{map_name}_tattle }},\n"
+
+            out += f"}};\n"
+            afterHeader = True
+
+        ############################################
+        #   NPCs
+        ############################################
+
         elif struct["type"] == "NpcSettings":
             tmp_out = f"NpcSettings {name} = {{\n"
             npcSettings = bytes.read(struct["length"])
@@ -245,6 +281,7 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
 
             tmp_out += "};\n"
             out += tmp_out
+
         elif struct["type"] == "AISettings":
             tmp_out = f"NpcAISettings {name} = {{\n"
             npcAISettings = bytes.read(struct["length"])
@@ -272,6 +309,7 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
 
             tmp_out += "};\n"
             out += tmp_out
+
         elif struct["type"] == "NpcGroup":
             staticNpc = bytes.read(struct["length"])
             curr_base = 0
@@ -440,6 +478,7 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
 
                 curr_base += 0x1F0
             out += tmp_out
+
         elif struct["type"] == "ExtraAnimationList":
             tmp_out = f"NpcAnimID {name}[] = {{\n"
             extraAnimations = bytes.read(struct["length"])
@@ -461,6 +500,7 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
                 i += 4
             tmp_out += f"}};\n"
             out += tmp_out
+
         elif struct["type"] == "NpcGroupList":
             tmp_out = f"NpcGroupList {name} = {{\n"
             npcGroupList = bytes.read(struct["length"])
@@ -480,6 +520,7 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
             tmp_out += INDENT + f"{{}},\n"
             tmp_out += f"}};\n"
             out += tmp_out
+
         elif struct["type"] == "ItemList":
             out += f"s32 {name}[] = {{\n"
 
@@ -487,6 +528,11 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
             for item in items:
                 out += f"    {disasm_script.CONSTANTS['ItemIDs'][item]},\n"
             out += f"}};\n"
+
+        ############################################
+        #   Foliage
+        ############################################
+
         elif struct["type"] == "TreeDropList":
             new_name = "N(" + name.split('_',1)[1][:-1].lower() + "_Drops)"
             symbol_map[struct["vaddr"]][0][1] = new_name
@@ -542,7 +588,7 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
             if isModelList:
                 out += f"FoliageModelList {new_name} = {{\n"
             else:
-                out += f"TreeEffectVectors {new_name} = {{\n"
+                out += f"FoliageVectorList {new_name} = {{\n"
 
             data = bytes.read(struct["length"])
             count = unpack_from(">I", data, 0)[0]
@@ -637,63 +683,80 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
 
             out += f" {entry[0]:.01f}f, {entry[1]:.01f}f, {entry[2]:.01f}f, {entry[3]:.01f}f }};\n"
 
-        elif struct["type"] == "Header":
-            out += f"MapConfig N(config) = {{\n"
+        ############################################
+        #   Shops
+        ############################################
 
-            bytes.read(0x10)
+        elif struct["type"] == "ShopOwnerNPC":
+            out += f"ShopOwner {name} = {{\n"
 
-            main,entry_list,entry_count = unpack(">IIi", bytes.read(4 * 3))
-            print(hex(main))
-            if main != 0:
-                out += f"    .main = &N(main),\n"
-            if entry_list != 0:
-                out += f"    .entryList = &{entry_list_name},\n"
-                out += f"    .entryCount = ENTRY_COUNT({entry_list_name}),\n"
+            data = unpack_from(">7I", bytes.read(struct["length"]), 0)
+            names = ["npcID", "idleAnim", "talkAnim", "unkScript1", "unkScript2", "unk_14", "shopStringIDs"]
 
-            bytes.read(0x1C)
+            for i, name in enumerate(names):
+                if data[i] != 0:
+                    if i == 0: # npcID
+                        out += f"{INDENT}.{name} = {INCLUDES_NEEDED['npcs'][data[i]]},\n"
+                    elif i in (1, 2): # animations
+                        sprite_id =  (data[i] & 0x00FF0000) >> 16
+                        palette_id = (data[i] & 0x0000FF00) >> 8
+                        anim_id =    (data[i] & 0x000000FF) >> 0
+                        sprite =  disasm_script.CONSTANTS["NPC_SPRITE"][sprite_id]["name"]
+                        palette = disasm_script.CONSTANTS["NPC_SPRITE"][sprite_id]["palettes"][palette_id]
+                        anim =    disasm_script.CONSTANTS["NPC_SPRITE"][sprite_id]["anims"][anim_id]
+                        out += f"{INDENT}.{name} = NPC_ANIM({sprite}, {palette}, {anim}),\n"
+                        INCLUDES_NEEDED["sprites"].add(sprite)
+                    elif i in (3, 4, 6): # scripts
+                        out += f"{INDENT}.{name} = &{symbol_map[data[i]][0][1]},\n"
+                    elif i == 5: # unk_14, separate bytes
+                        out += f"{INDENT}.{name} = {{ 0x{(data[i] & 0xFF000000) >> 24:02X}, 0x{(data[i] & 0xFF0000) >> 16:02X}, 0x{(data[i] & 0xFF00) >> 8:02X}, 0x{data[i] & 0xFF:02X} }},\n"
+                    else:
+                        out += f"{INDENT}.{name} = 0x{data[i]:X},\n"
+            out += f"}};\n"
 
-            bg,tattle = unpack(">II", bytes.read(4 * 2))
-            if bg == 0x80200000:
-                out += f"    .background = &gBackgroundImage,\n"
-            elif bg != 0:
-                raise Exception(f"unknown MapConfig background {bg:X}")
-            if tattle != 0:
-                INCLUDES_NEEDED["tattle"].append(f"- [0x{(tattle & 0xFF0000) >> 16:02X}, 0x{tattle & 0xFFFF:04X}, {map_name}_tattle]")
-                out += f"    .tattle = {{ MSG_{map_name}_tattle }},\n"
+        elif struct["type"] == "ShopInventory" or struct["type"] == "ShopPriceList":
+            if struct["type"] == "ShopInventory":
+                out += f"StaticInventoryItem {name}[] = {{\n"
+            else:
+                out += f"StaticPriceItem {name}[] = {{\n"
+
+            data = bytes.read(struct["length"])
+            for i in range(0, struct["length"], 4*3):
+                entry = unpack_from(">3I", data, i)
+                if all([x == 0 for x in entry]):
+                    out += f"{INDENT}{{}}\n"
+                else:
+                    out += f"{INDENT}{{ {disasm_script.CONSTANTS['ItemIDs'][entry[0]]}, {entry[1]}, "
+                    if struct["type"] == "ShopInventory":
+                        out += f"MESSAGE_ID(0x{(entry[2] & 0xFF0000) >> 16:02X}, 0x{entry[2] & 0xFFFF:04X})"
+                    else:
+                        out += f"{{ 0x{(entry[2] & 0xFF000000) >> 24:02X}, 0x{(entry[2] & 0xFF0000) >> 16:02X}, 0x{(entry[2] & 0xFF00) >> 8:02X}, 0x{entry[2] & 0xFF:02X} }}"
+                    out += f" }},\n"
 
             out += f"}};\n"
-            afterHeader = True
-        elif struct["type"] == "ASCII" or struct["type"] == "SJIS":
-            # rodata string hopefully inlined elsewhere
-            bytes.read(struct["length"])
-            out += f"// rodata: {struct['name']}\n"
-        elif struct["type"].startswith("Function"):
-            bytes.read(struct["length"])
-            out += f"s32 {name}();\n"
-        elif struct["type"] == "FloatTable":
-            vram = int(name.split("_",1)[1][:-1], 16)
-            name = f"N(D_{vram:X}_{(vram - 0x80240000) + romstart:X})"
-            struct["name"] = name
-            out += f"f32 {name}[] = {{"
-            for i in range(0, struct["length"], 4):
-                if (i % (4 * 4)) == 0:
-                    out += f"\n   "
 
-                word = unpack(">f", bytes.read(4))[0]
-                out += f" {word:.01f}f,"
-
-            out += f"\n}};\n"
-        elif struct["type"] == "VectorList":
+        elif struct["type"] == "ShopItemPositions":
+            out += f"ShopItemLocation {name}[] = {{\n"
             data = bytes.read(struct["length"])
-            if len(data) > 0:
-                out += f"Vec3f {name}[] = {{\n"
-                out += f"\t"
-            for i,pos in enumerate(range(0, len(data), 0xC)):
-                x, y, z = unpack_from(">fff", data, pos)
-                out += f" {{ {x:.01f}, {y:.01f}, {z:.01f} }},"
-                if (i+1) % 2 == 0:
-                    out += f"\n\t"
-            out += f"\n}};\n"
+            for i in range(0, struct["length"], 2*2):
+                entry = unpack_from(">2H", data, i)
+                out += f"{INDENT}{{ 0x{entry[0]:02X}, 0x{entry[1]:02X} }},\n"
+            out += f"}};\n"
+
+        elif struct["type"] == "IntTable" and midx[0]["type"] == "ShopInventory":
+            # heuristic as currently this is just a generic IntTable
+            new_name = "N(shopStrings_" + name.split("_",1)[1]
+            symbol_map[struct["vaddr"]][0][1] = new_name
+
+            out += f"s32 {new_name}[] = {{\n"
+            data = unpack_from(f">{struct['length']//4}I", bytes.read(struct["length"]), 0)
+            for msg in data:
+                out += f"{INDENT}MESSAGE_ID(0x{(msg & 0xFF0000) >> 16:02X}, 0x{msg & 0xFFFF:04X}),\n"
+            out += f"}};\n"
+
+        ############################################
+        #   Battle
+        ############################################
 
         elif struct["type"] == "Formation":
             out += f"Formation {struct['name']} = {{\n"
@@ -900,6 +963,43 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
                 out += f"    .unk_24 = {unk_24:X},\n"
 
             out += f"}};\n"
+
+        ############################################
+        #   Misc data types
+        ############################################
+
+        elif struct["type"] == "ASCII" or struct["type"] == "SJIS":
+            # rodata string hopefully inlined elsewhere
+            bytes.read(struct["length"])
+            out += f"// rodata: {struct['name']}\n"
+        elif struct["type"].startswith("Function"):
+            bytes.read(struct["length"])
+            out += f"s32 {name}();\n"
+        elif struct["type"] == "FloatTable":
+            vram = int(name.split("_",1)[1][:-1], 16)
+            name = f"N(D_{vram:X}_{(vram - 0x80240000) + romstart:X})"
+            struct["name"] = name
+            out += f"f32 {name}[] = {{"
+            for i in range(0, struct["length"], 4):
+                if (i % (4 * 4)) == 0:
+                    out += f"\n   "
+
+                word = unpack(">f", bytes.read(4))[0]
+                out += f" {word:.01f}f,"
+
+            out += f"\n}};\n"
+        elif struct["type"] == "VectorList":
+            data = bytes.read(struct["length"])
+            if len(data) > 0:
+                out += f"Vec3f {name}[] = {{\n"
+                out += f"\t"
+            for i,pos in enumerate(range(0, len(data), 0xC)):
+                x, y, z = unpack_from(">fff", data, pos)
+                out += f" {{ {x:.01f}, {y:.01f}, {z:.01f} }},"
+                if (i+1) % 2 == 0:
+                    out += f"\n\t"
+            out += f"\n}};\n"
+
         else: # unknown type of struct
             if struct["name"].startswith("N(unk_802"):
                 vram = int(name.split("_",1)[1][:-1], 16)

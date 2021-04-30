@@ -2,8 +2,25 @@
 
 #define UNK_ALPHA_FUNC_NPC 7
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80240CB0_A1BDB0);
-/*
+typedef struct {
+    /* 0x00 */ s32 flags;
+    /* 0x04 */ s32 effectIndex;
+    /* 0x08 */ s32 instanceCounter;
+    /* 0x0C */ EffectInstanceDataThing* unk_0C;
+    /* 0x10 */ void (*update)(EffectInstance* effectInst);
+    /* 0x14 */ void (*renderWorld)(EffectInstance* effectInst);
+    /* 0x18 */ void (*unk_18)(EffectInstance* effectInst);
+    /* 0x1C */ void* unk_1C;
+} N(temp);
+
+static s32 N(D_8024BDD0);
+static s8 N(pad_D_8024BDD4)[0x10];
+static s32 N(D_8024BDE8);
+static s8 N(pad_D_8024BDEC)[0x4];
+static N(temp)* N(D_8024BDF0);
+static N(temp)* N(D_8024BDF4);
+static N(temp)* N(D_8024BDF8);
+
 void N(func_80240CB0_A1BDB0)(ScriptInstance* script, NpcAISettings* aiSettings, EnemyTerritoryThing* territory) {
     Enemy* enemy = script->owner1.enemy;
     Npc* npc = get_npc_unsafe(enemy->npcID);
@@ -27,9 +44,154 @@ void N(func_80240CB0_A1BDB0)(ScriptInstance* script, NpcAISettings* aiSettings, 
     enemy->varTable[4] = npc->pos.y * 100.0;
     script->functionTemp[0].s = 1;
 }
-*/
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80240E60_A1BF60);
+#ifdef NON_MATCHING
+void N(func_802404D0_CB54D0)(ScriptInstance *script, NpcAISettings *aiSettings, EnemyTerritoryThing *territory) {
+    Enemy* enemy = script->owner1.enemy;
+    Npc* npc = get_npc_unsafe(enemy->npcID);
+    f32 temp_f24;
+    f32 posX, posY, posZ, posW;
+    s32 var;
+    f32 temp_f0;
+    f32 phi_f4;
+    s32 phi_v0;
+    s32 phi_s4 = 0;
+
+    f32 a = enemy->varTable[7];
+    f32 temp_f2  = a / 100.0;
+    f32 b = enemy->varTable[3];
+    f32 temp_f26 = b / 100.0;
+    f32 c = enemy->varTable[4];
+    f32 temp_f20 = c / 100.0;
+    f32 d = enemy->varTable[1];
+    f32 temp_f22 = d / 100.0;
+
+    enemy->varTable[4] = npc->pos.y * 100.0;
+    temp_f24 = temp_f26 + temp_f2;
+
+    if ((enemy->varTable[0] & 0x11) == 1) {
+        if (npc->flags & 8) {
+            if (temp_f22 < (temp_f24 - npc->pos.y)) {
+                enemy->varTable[0] |= 0x10;
+            }
+        } else {
+            posX = npc->pos.x;
+            posY = npc->pos.y;
+            posZ = npc->pos.z;
+            posW = 1000.0f;
+            func_800DCB7C(npc->unk_80, &posX, &posY, &posZ, &posW);
+            if (temp_f22 < (temp_f26 - posW)) {
+                enemy->varTable[0] |= 0x10;
+            }
+        }
+    }
+
+    if ((enemy->varTable[0] & 0x11) == 0x11) {
+        // original m2c reference:
+        //if ((temp_s0->flags & 8) != 0) {
+        //    phi_f0 = temp_f20 + ((temp_f24 - temp_f20) * D_802441A8_CB91A8);
+        //    phi_f4 = temp_f24;
+        //} else {
+        //    func_800DCB7C(temp_s0->unk_80, &subroutine_argA, &subroutine_argB, &subroutine_argC, &subroutine_argD, temp_s0->pos.x, temp_f20, temp_s0->pos.z, 1000.0f);
+        //    temp_f4 = subroutine_argB + temp_f26;
+        //    phi_f0 = temp_f20 + ((temp_f4 - temp_f20) * D_802441B0_CB91B0);
+        //    phi_f4 = temp_f4;
+        //}
+        //temp_s0->pos.y = phi_f0;
+
+        f64 test;
+        if (npc->flags & 8) {
+            phi_f4 = temp_f24;
+            npc->pos.y = temp_f20 + ((phi_f4 - temp_f20) * 0.09);
+        } else {
+            posX = npc->pos.x;
+            posY = temp_f20;
+            posZ = npc->pos.z;
+            posW = 1000.0f;
+            func_800DCB7C(npc->unk_80, &posX, &posY, &posZ, &posW);
+            phi_f4 = posY + temp_f26;
+            npc->pos.y = temp_f20 + ((phi_f4 - temp_f20) * 0.09);
+        }
+
+        if (fabsf(phi_f4 - npc->pos.y) < 1.0) {
+            npc->pos.y = phi_f4;
+            enemy->varTable[0] &= ~0x10;
+        }
+    } else if (enemy->varTable[1] > 0) {
+        temp_f0 = sin_deg(enemy->varTable[2]);
+        if (npc->flags & 8) {
+            phi_v0 = FALSE;
+        } else {
+            posX = npc->pos.x;
+            posY = npc->pos.y;
+            posZ = npc->pos.z;
+            posW = 1000.0f;
+            phi_v0 = func_800DCB7C(npc->unk_80, &posX, &posY, &posZ, &posW);
+        }
+        if (phi_v0) {
+            npc->pos.y = posY + temp_f26 + (temp_f0 * temp_f22);
+        } else {
+            npc->pos.y = temp_f24 + (temp_f0 * temp_f22);
+        }
+        enemy->varTable[2] = clamp_angle(enemy->varTable[2] + 10);
+    }
+
+    if (enemy->varTable[9] <= 0) {
+        if (aiSettings->unk_14 >= 0) {
+            if (script->functionTemp[1].s <= 0) {
+                script->functionTemp[1].s = aiSettings->unk_14;
+                if ((gPlayerStatusPtr->position.y < ((npc->pos.y + npc->collisionHeight) + 10.0)) &&
+                    func_800490B4(territory, enemy, aiSettings->alertRadius, aiSettings->unk_10.f, 0)) {
+                    fx_emote(0, npc, 0.0f, npc->collisionHeight, 1.0f, 2.0f, -20.0f, 12, &var);
+                    npc->moveToPos.y = npc->pos.y;
+                    func_800494C0(npc, 0x2F4, 0x200000);
+                    if (enemy->npcSettings->unk_2A & 1) {
+                        script->functionTemp[0].s = 10;
+                    } else {
+                        script->functionTemp[0].s = 12;
+                    }
+                    return;
+                }
+            }
+            script->functionTemp[1].s--;
+        }
+    } else {
+        enemy->varTable[9]--;
+    }
+
+    if (is_point_within_region(enemy->territory->wander.wanderShape,
+            enemy->territory->wander.point.x, enemy->territory->wander.point.z,
+            npc->pos.x, npc->pos.z,
+            enemy->territory->wander.wanderSizeX, enemy->territory->wander.wanderSizeZ)) {
+        posW = dist2D(enemy->territory->wander.point.x, enemy->territory->wander.point.z, npc->pos.x, npc->pos.z);
+        if (npc->moveSpeed < posW) {
+            npc->yaw = atan2(npc->pos.x, npc->pos.z, enemy->territory->wander.point.x, enemy->territory->wander.point.z);
+            phi_s4 = 1;
+        }
+    }
+
+    if (enemy->territory->wander.wanderSizeX | enemy->territory->wander.wanderSizeZ | phi_s4) {
+        if (npc->turnAroundYawAdjustment == 0) {
+            npc_move_heading(npc, npc->moveSpeed, npc->yaw);
+        } else {
+            return;
+        }
+    }
+
+    enemy->varTable[4] = npc->pos.y * 100.0;
+    if (aiSettings->moveTime > 0) {
+        if ((npc->duration <= 0) || (--npc->duration <= 0)) {
+            script->functionTemp[0].s = 2;
+            script->functionTemp[1].s = (rand_int(1000) % 3) + 2;
+            if ((aiSettings->unk_2C <= 0) || (aiSettings->waitTime <= 0) || (script->functionTemp[1].s < 3)) {
+                script->functionTemp[0].s = 0;
+            }
+        }
+    }
+}
+#else
+INCLUDE_ASM(ApiStatus, "world/area_hos/hos_03/A1BDB0", hos_03_func_80240E60_A1BF60, ScriptInstance *script, NpcAISettings *aiSettings, EnemyTerritoryThing *territory);
+#endif
 
 #include "world/common/UnkNpcAIFunc1.inc.c"
 
@@ -37,8 +199,6 @@ INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80240E60_A1BF60);
 
 #include "world/common/UnkNpcAIFunc2.inc.c"
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80241904_A1CA04);
-/*
 void N(func_80241904_A1CA04)(ScriptInstance* script, NpcAISettings* aiSettings, EnemyTerritoryThing* territory) {
     Enemy* enemy = script->owner1.enemy;
     Npc* npc = get_npc_unsafe(enemy->npcID);
@@ -48,7 +208,6 @@ void N(func_80241904_A1CA04)(ScriptInstance* script, NpcAISettings* aiSettings, 
         script->functionTemp[0].s = 12;
     }
 }
-*/
 
 #include "world/common/UnkNpcAIFunc14.inc.c"
 
@@ -58,8 +217,6 @@ void N(func_80241904_A1CA04)(ScriptInstance* script, NpcAISettings* aiSettings, 
 
 #include "world/common/UnkFunc5.inc.c"
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80241FBC_A1D0BC);
-/*
 ApiStatus N(func_80241FBC_A1D0BC)(ScriptInstance* script, s32 isInitialCall) {
     Enemy* enemy = script->owner1.enemy;
     Bytecode* args = script->ptrReadPos;
@@ -78,7 +235,7 @@ ApiStatus N(func_80241FBC_A1D0BC)(ScriptInstance* script, s32 isInitialCall) {
     territory.unk_1C = 0;
 
     if (isInitialCall) {
-        N(func_80241E98_A1CF98)(npc, enemy, script, aiSettings);
+        N(UnkFunc5)(npc, enemy, script, aiSettings);
     }
 
     npc->unk_AB = -2;
@@ -99,7 +256,7 @@ ApiStatus N(func_80241FBC_A1D0BC)(ScriptInstance* script, s32 isInitialCall) {
         case 2:
             N(UnkNpcAIFunc1)(script, aiSettings, territoryPtr);
         case 3:
-            N(func_80241548_A1C648)(script, aiSettings, territoryPtr);
+            N(UnkFunc4)(script, aiSettings, territoryPtr);
             break;
         case 10:
             N(UnkNpcAIFunc2)(script, aiSettings, territoryPtr);
@@ -113,13 +270,12 @@ ApiStatus N(func_80241FBC_A1D0BC)(ScriptInstance* script, s32 isInitialCall) {
             N(UnkNpcAIFunc3)(script, aiSettings, territoryPtr);
             break;
         case 14:
-            N(func_80241B08_A1CC08)(script, aiSettings, territoryPtr);
+            N(UnkFunc6)(script, aiSettings, territoryPtr);
             break;
     }
 
     return ApiStatus_BLOCK;
 }
-*/
 
 #include "world/common/Call800E9894.inc.c"
 
@@ -141,8 +297,6 @@ ApiStatus N(func_80241FBC_A1D0BC)(ScriptInstance* script, s32 isInitialCall) {
 
 #include "world/common/UnkFunc36.inc.c"
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_802424A4_A1D5A4);
-/*
 ApiStatus N(func_802424A4_A1D5A4)(ScriptInstance* script, s32 isInitialCall) {
     s32 i;
 
@@ -160,14 +314,11 @@ ApiStatus N(func_802424A4_A1D5A4)(ScriptInstance* script, s32 isInitialCall) {
     }
     return ApiStatus_DONE2;
 }
-*/
 
 #include "world/common/GetItemName.inc.c"
 
 #include "world/common/Set80151310.inc.c"
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_802425E0_A1D6E0);
-/*
 ApiStatus N(func_802425E0_A1D6E0)(ScriptInstance *script, s32 isInitialCall) {
     Enemy* enemy = script->owner1.enemyID;
     u16 phi_s0 = get_variable(script, SI_SAVE_FLAG(1768));
@@ -206,16 +357,16 @@ ApiStatus N(func_802425E0_A1D6E0)(ScriptInstance *script, s32 isInitialCall) {
     temp_v0 = get_variable(NULL, SI_SAVE_VAR(0));
 
     for (i = 0; i < 8; i++) {
-        if (temp_v0 < (*(N(quizRequirements) + i)).unk_00) {
+        if (temp_v0 < N(quizRequirements)[i].unk_00) {
             break;
         }
     }
 
-    temp_v0 = temp_s0_2 < (*(N(quizRequirements) + i)).unk_04;
+    temp_v0 = temp_s0_2 < N(quizRequirements)[i].unk_04;
     test2 = var = temp_v0;
 
     if ((((sp_10 == temp_s6) && (sp_1e == phi_s5) && (phi_s7 == 0) && test2)) ||
-        ((gGameStatusPtr->unk_75 != 0) && var)) {
+        ((gGameStatusPtr->debugQuizmo != 0) && var)) {
         script->varTable[0] = 1;
     } else {
         kill_enemy(enemy);
@@ -224,42 +375,35 @@ ApiStatus N(func_802425E0_A1D6E0)(ScriptInstance *script, s32 isInitialCall) {
 
     return ApiStatus_DONE2;
 }
-*/
 
 #include "world/common/UnkFunc31.inc.c"
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80242B90_A1DC90);
-/*
 ApiStatus N(func_80242B90_A1DC90)(ScriptInstance *script, s32 isInitialCall) {
-    PlayerData* playerData = &gPlayerData;
     u16 quizzesAnswered = gPlayerData.quizzesAnswered;
 
     if (quizzesAnswered < 0x3E7) {
-        playerData->quizzesAnswered++;
+        gPlayerData.quizzesAnswered++;
     }
 
     if (script->varTable[0] == N(quizAnswers)[get_variable(NULL, SI_SAVE_VAR(352))]) {
         script->varTable[0] = 1;
-        playerData->quizzesCorrect++;
+        gPlayerData.quizzesCorrect++;
     } else {
         script->varTable[0] = 0;
     }
 
     return ApiStatus_DONE2;
 }
-*/
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80242C14_A1DD14);
-/*
 ApiStatus N(func_80242C14_A1DD14)(ScriptInstance *script, s32 isInitialCall) {
     EffectInstanceDataThing* effectPtr;
 
     if (isInitialCall) {
-        Effect** effect = &D_8024DFE0;
+        Effect** effect = &N(D_8024BDF0);
 
         *effect = func_800715D0(0, get_variable(script, SI_ARRAY(1)), get_variable(script, SI_ARRAY(2)), get_variable(script, SI_ARRAY(3)));
-        D_8024DFE4 = func_80071810(0, get_variable(script, SI_ARRAY(1)), get_variable(script, SI_ARRAY(2)), get_variable(script, SI_ARRAY(3)));
-        D_8024DFE8 = func_80072890(0, get_variable(script, SI_ARRAY(1)), get_variable(script, SI_ARRAY(2)), get_variable(script, SI_ARRAY(3)), 1.0f, 0);
+        N(D_8024BDF4) = func_80071810(0, get_variable(script, SI_ARRAY(1)), get_variable(script, SI_ARRAY(2)), get_variable(script, SI_ARRAY(3)));
+        N(D_8024BDF8) = func_80072890(0, get_variable(script, SI_ARRAY(1)), get_variable(script, SI_ARRAY(2)), get_variable(script, SI_ARRAY(3)), 1.0f, 0);
 
         effectPtr = (*effect)->unk_0C;
         effectPtr->unk_18 = 0;
@@ -269,7 +413,7 @@ ApiStatus N(func_80242C14_A1DD14)(ScriptInstance *script, s32 isInitialCall) {
         effectPtr->unk_1C = 0;
     }
 
-    effectPtr = D_8024DFE0->unk_0C;
+    effectPtr = N(D_8024BDF0)->unk_0C;
 
     effectPtr->unk_20 += 10;
     effectPtr->unk_28 += 10;
@@ -283,19 +427,16 @@ ApiStatus N(func_80242C14_A1DD14)(ScriptInstance *script, s32 isInitialCall) {
 
     return ApiStatus_BLOCK;
 }
-*/
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80242E2C_A1DF2C);
-/*
 ApiStatus N(func_80242E2C_A1DF2C)(ScriptInstance *script, s32 isInitialCall) {
     EffectInstanceDataThing* effectPtr;
 
     if (isInitialCall) {
-        D_8024DFE4->flags |= 0x10;
-        D_8024DFE8->flags |= 0x10;
+        N(D_8024BDF4)->flags |= 0x10;
+        N(D_8024BDF8)->flags |= 0x10;
     }
 
-    effectPtr = D_8024DFE0->unk_0C;
+    effectPtr = N(D_8024BDF0)->unk_0C;
     effectPtr->unk_18 -= 10;
     effectPtr->unk_20 -= 10;
     effectPtr->unk_24.s -= 10;
@@ -304,28 +445,22 @@ ApiStatus N(func_80242E2C_A1DF2C)(ScriptInstance *script, s32 isInitialCall) {
 
     if (effectPtr->unk_18 <= 0) {
         effectPtr->unk_18 = 0;
-        remove_effect(D_8024DFE0, effectPtr);
-        free_dynamic_entity(D_8024DFC0);
+        remove_effect(N(D_8024BDF0), effectPtr);
+        free_dynamic_entity(N(D_8024BDD0));
         return ApiStatus_DONE2;
     }
 
     return ApiStatus_BLOCK;
 }
-*/
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80242EE0_A1DFE0);
-/*
 ApiStatus N(func_80242EE0_A1DFE0)(ScriptInstance *script, s32 isInitialCall) {
-    D_8024DFE0->unk_0C->unk_34 = get_variable(script, *script->ptrReadPos);
+    N(D_8024BDF0)->unk_0C->unk_34 = get_variable(script, *script->ptrReadPos);
     return ApiStatus_DONE2;
 }
-*/
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80242F14_A1E014);
-/*
 ApiStatus N(func_80242F14_A1E014)(ScriptInstance *script, s32 isInitialCall) {
     s32 var = get_variable(script, *script->ptrReadPos);
-    EffectInstanceDataThing* effectPtr = D_8024DFE0->unk_0C;
+    EffectInstanceDataThing* effectPtr = N(D_8024BDF0)->unk_0C;
 
     switch (var) {
         case 0:
@@ -344,31 +479,21 @@ ApiStatus N(func_80242F14_A1E014)(ScriptInstance *script, s32 isInitialCall) {
 
     return ApiStatus_DONE2;
 }
-*/
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80242F94_A1E094);
-/*
 ApiStatus N(func_80242F94_A1E094)(ScriptInstance *script, s32 isInitialCall) {
-    D_8024DFE8->unk_0C->unk_1C = 0;
+    N(D_8024BDF8)->unk_0C->unk_1C = 0;
     return ApiStatus_DONE2;
 }
-*/
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80242FAC_A1E0AC);
-/*
 ApiStatus N(func_80242FAC_A1E0AC)(ScriptInstance *script, s32 isInitialCall) {
-    D_8024DFE8->unk_0C->unk_1C = 1;
+    N(D_8024BDF8)->unk_0C->unk_1C = 1;
     return ApiStatus_DONE2;
 }
-*/
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80242FC8_A1E0C8);
-/*
 ApiStatus N(func_80242FC8_A1E0C8)(ScriptInstance *script, s32 isInitialCall) {
-    D_8024DFE8->unk_0C->unk_1C = 2;
+    N(D_8024BDF8)->unk_0C->unk_1C = 2;
     return ApiStatus_DONE2;
 }
-*/
 
 #include "world/common/GetGameStatus75.inc.c"
 
@@ -382,10 +507,8 @@ ApiStatus N(func_80242FC8_A1E0C8)(ScriptInstance *script, s32 isInitialCall) {
 
 #include "world/common/UnkPartnerFuncs.inc.c"
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_8024349C_A1E59C);
-/*
 void N(func_8024349C_A1E59C)(void) {
-    s32 var = get_variable(NULL, D_8024DFD8);
+    s32 var = get_variable(NULL, N(D_8024BDE8));
 
     if (var == 1) {
         func_80071690(0, 0, 0, 0);
@@ -393,12 +516,8 @@ void N(func_8024349C_A1E59C)(void) {
         func_80071690(1, 0, 0, 0);
     }
 }
-*/
 
-INCLUDE_ASM(s32, "world/area_hos/hos_03/A1BDB0", func_80243508_A1E608);
-/*
 ApiStatus N(func_80243508_A1E608)(ScriptInstance *script, s32 isInitialCall) {
-    D_8024DFC0 = create_dynamic_entity_frontUI(NULL, N(func_80242468_95D668));
+    N(D_8024BDD0) = create_dynamic_entity_frontUI(NULL, N(func_8024349C_A1E59C));
     return ApiStatus_DONE2;
 }
-*/

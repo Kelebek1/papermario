@@ -556,12 +556,7 @@ u8 N(quizAnswers)[] = {
     0x01, 0x02, 0x00, 0x02, 0x02, 0x01, 0x01, 0x01,
 };
 
-typedef struct {
-    s32 unk_00;
-    s32 unk_04;
-} N(quizReqStruct);
-
-N(quizReqStruct) N(quizRequirements)[] = {
+quizReqStruct N(quizRequirements)[] = {
     { -108, 0 }, { -76, 10 },
     { -54, 20 }, { -14, 30 },
     {   6, 37 }, {  39, 44 },
@@ -2230,34 +2225,51 @@ NpcGroupList N(npcGroupList_8024B47C) = {
     {},
 };
 
-s32 N(intTable_8024B4A0)[] = {
-    MESSAGE_ID(0x27, 0x0049), MESSAGE_ID(0x27, 0x004A), MESSAGE_ID(0x27, 0x004B), MESSAGE_ID(0x27, 0x004C),
-    MESSAGE_ID(0x27, 0x004D), MESSAGE_ID(0x27, 0x004E), MESSAGE_ID(0x27, 0x004F), MESSAGE_ID(0x27, 0x0050),
-    MESSAGE_ID(0x27, 0x0051), MESSAGE_ID(0x27, 0x0052), MESSAGE_ID(0x27, 0x0053), MESSAGE_ID(0x27, 0x0054),
-    MESSAGE_ID(0x27, 0x0055), MESSAGE_ID(0x27, 0x0056), MESSAGE_ID(0x27, 0x0057), MESSAGE_ID(0x27, 0x0058),
-    MESSAGE_ID(0x27, 0x0059), MESSAGE_ID(0x27, 0x005A), MESSAGE_ID(0x27, 0x005B), MESSAGE_ID(0x27, 0x005C),
-    MESSAGE_ID(0x27, 0x005D), MESSAGE_ID(0x27, 0x005E), MESSAGE_ID(0x27, 0x005F),
+s32 N(shopStrings_8024B4A0)[] = {
+    MESSAGE_ID(0x27, 0x0049),
+    MESSAGE_ID(0x27, 0x004A),
+    MESSAGE_ID(0x27, 0x004B),
+    MESSAGE_ID(0x27, 0x004C),
+    MESSAGE_ID(0x27, 0x004D),
+    MESSAGE_ID(0x27, 0x004E),
+    MESSAGE_ID(0x27, 0x004F),
+    MESSAGE_ID(0x27, 0x0050),
+    MESSAGE_ID(0x27, 0x0051),
+    MESSAGE_ID(0x27, 0x0052),
+    MESSAGE_ID(0x27, 0x0053),
+    MESSAGE_ID(0x27, 0x0054),
+    MESSAGE_ID(0x27, 0x0055),
+    MESSAGE_ID(0x27, 0x0056),
+    MESSAGE_ID(0x27, 0x0057),
+    MESSAGE_ID(0x27, 0x0058),
+    MESSAGE_ID(0x27, 0x0059),
+    MESSAGE_ID(0x27, 0x005A),
+    MESSAGE_ID(0x27, 0x005B),
+    MESSAGE_ID(0x27, 0x005C),
+    MESSAGE_ID(0x27, 0x005D),
+    MESSAGE_ID(0x27, 0x005E),
+    MESSAGE_ID(0x27, 0x005F),
 };
 
-N(shopInventory) N(shopInventory_8024B4FC)[] = {
-    { ITEM_THUNDER_BOLT,    5, MESSAGE_ID(0x24, 0x0003) },
-    { ITEM_DUSTY_HAMMER,    2, MESSAGE_ID(0x24, 0x0005) },
-    { ITEM_HONEY_SYRUP,     5, MESSAGE_ID(0x24, 0x0016) },
-    { ITEM_DRIED_SHROOM,    2, MESSAGE_ID(0x24, 0x000D) },
-    { ITEM_DRIED_PASTA,     3, MESSAGE_ID(0x24, 0x001D) },
-    { ITEM_MUSHROOM,        3, MESSAGE_ID(0x24, 0x0009) },
-    {},
+StaticInventoryItem N(shopInventory_8024B4FC)[] = {
+    { ITEM_THUNDER_BOLT, 5, MESSAGE_ID(0x24, 0x0003) },
+    { ITEM_DUSTY_HAMMER, 2, MESSAGE_ID(0x24, 0x0005) },
+    { ITEM_HONEY_SYRUP, 5, MESSAGE_ID(0x24, 0x0016) },
+    { ITEM_DRIED_SHROOM, 2, MESSAGE_ID(0x24, 0x000D) },
+    { ITEM_DRIED_PASTA, 3, MESSAGE_ID(0x24, 0x001D) },
+    { ITEM_MUSHROOM, 3, MESSAGE_ID(0x24, 0x0009) },
+    {}
 };
 
-N(shopPrice) N(shopPriceList_8024B550)[] = {
-    { ITEM_SNOWMAN_DOLL,    12, 0x00000000 },
-    { ITEM_MELON,           10, 0x00000000 },
-    { ITEM_ICED_POTATO,     10, 0x00000000 },
-    { ITEM_TASTY_TONIC,      5, 0x00000000 },
-    { ITEM_SUPER_SODA,       6, 0x00000000 },
-    { ITEM_SPECIAL_SHAKE,   15, 0x00000000 },
-    { ITEM_DRIED_PASTA,      2, 0x00000000 },
-    {},
+StaticPriceItem N(shopPriceList_8024B550)[] = {
+    { ITEM_SNOWMAN_DOLL, 12, { 0x00, 0x00, 0x00, 0x00 } },
+    { ITEM_MELON, 10, { 0x00, 0x00, 0x00, 0x00 } },
+    { ITEM_ICED_POTATO, 10, { 0x00, 0x00, 0x00, 0x00 } },
+    { ITEM_TASTY_TONIC, 5, { 0x00, 0x00, 0x00, 0x00 } },
+    { ITEM_SUPER_SODA, 6, { 0x00, 0x00, 0x00, 0x00 } },
+    { ITEM_SPECIAL_SHAKE, 15, { 0x00, 0x00, 0x00, 0x00 } },
+    { ITEM_DRIED_PASTA, 2, { 0x00, 0x00, 0x00, 0x00 } },
+    {}
 };
 
 s32** N(D_8024B5B0_9667B0) = NULL;
@@ -2281,27 +2293,6 @@ Script N(8024B664) = SCRIPT({
     NpcJump0(NPC_MOUSER1, 20, 0, -259, 10);
     NpcJump0(NPC_MOUSER1, 20, 0, -259, 4);
 });
-
-// extra END_IF
-/*
-Script N(8024B6B4) = SCRIPT({
-    N(func_80243578_95E778)();
-    func_802D2C14(1);
-    await N(8024B614);
-    if (STORY_PROGRESS < STORY_CH2_BOUGHT_SECRET_ITEMS) {
-        SpeakToPlayer(NPC_MOUSER1, NPC_ANIM(mouser, Palette_01, Anim_5), NPC_ANIM(mouser, Palette_01, Anim_1), 0, MESSAGE_ID(0x0D, 0x0087));
-        SetPlayerAnimation(ANIM_10002);
-        sleep 10;
-        SetPlayerAnimation(ANIM_80007);
-        sleep 30;
-    }
-    SpeakToPlayer(NPC_MOUSER1, NPC_ANIM(mouser, Palette_01, Anim_5), NPC_ANIM(mouser, Palette_01, Anim_1), 0, MESSAGE_ID(0x0D, 0x0088));
-    STORY_PROGRESS = STORY_CH2_BOUGHT_SECRET_ITEMS;
-    func_802D2C14(0);
-    await N(8024B664);
-    }
-});
-*/
 
 // *INDENT-OFF*
 Script N(8024B6B4) = {
@@ -2386,12 +2377,21 @@ Script N(8024B894) = SCRIPT({
     }
 });
 
-s32 N(shopItemPositions_8024BA68)[] = {
-    0x004C0021, 0x004B0022, 0x00490023, 0x004A0024, 0x00480025, 0x00470026,
+ShopItemLocation N(shopItemPositions_8024BA68)[] = {
+    { 0x4C, 0x21 },
+    { 0x4B, 0x22 },
+    { 0x49, 0x23 },
+    { 0x4A, 0x24 },
+    { 0x48, 0x25 },
+    { 0x47, 0x26 },
 };
 
-s32 N(shopOwnerNPC_8024BA80)[] = {
-    0x00000006, 0x00940101, 0x00940105, N(8024B894), 0x00000000, 0x00000000, N(intTable_8024B4A0),
+ShopOwner N(shopOwnerNPC_8024BA80) = {
+    .npcID = NPC_MOUSER1,
+    .idleAnim = NPC_ANIM(mouser, Palette_01, Anim_1),
+    .talkAnim = NPC_ANIM(mouser, Palette_01, Anim_5),
+    .unkScript1 = &N(8024B894),
+    .shopStringIDs = &N(shopStrings_8024B4A0),
 };
 
 s32 N(pad_BA9C) = {

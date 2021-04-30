@@ -136,7 +136,7 @@ Script N(searchBush) = {
     SI_CMD(ScriptOpcode_END_SPAWN_THREAD),
     SI_CMD(ScriptOpcode_SLEEP_FRAMES, 15),
     SI_CMD(ScriptOpcode_IF_NE, SI_VAR(4), 0),
-        SI_CMD(ScriptOpcode_AWAIT_SCRIPT, 0xFE363C84),
+        SI_CMD(ScriptOpcode_AWAIT_SCRIPT, SI_VAR(4)),
     SI_CMD(ScriptOpcode_END_IF),
     SI_CMD(ScriptOpcode_RETURN),
     SI_CMD(ScriptOpcode_END)
@@ -246,7 +246,7 @@ Script N(shakeTree) = {
         SI_CMD(ScriptOpcode_END_IF),
     SI_CMD(ScriptOpcode_END_SPAWN_THREAD),
     SI_CMD(ScriptOpcode_IF_NE, SI_VAR(5), 0),
-        SI_CMD(ScriptOpcode_AWAIT_SCRIPT, 0xFE363C85),
+        SI_CMD(ScriptOpcode_AWAIT_SCRIPT, SI_VAR(5)),
     SI_CMD(ScriptOpcode_END_IF),
     SI_CMD(ScriptOpcode_SLEEP_FRAMES, 15),
     SI_CMD(ScriptOpcode_RETURN),
