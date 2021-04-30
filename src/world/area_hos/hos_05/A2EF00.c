@@ -31,6 +31,12 @@ void func_802456C8_A2F908(void) {
 }
 
 INCLUDE_ASM(s32, "world/area_hos/hos_05/A2EF00", func_80245718_A2F958);
+/*
+ApiStatus N(func_80245718_A2F958)(ScriptInstance *script, s32 isInitialCall) {
+    N(D_8024DCCC_A37F0C) = get_variable(script, *script->ptrReadPos);
+    return ApiStatus_DONE2;
+}
+*/
 
 void func_80245744_A2F984(void) {
     gDPSetCombineLERP(gMasterGfxPos++, TEXEL0, 0, SHADE, 0, TEXEL0, 0, PRIMITIVE, 0, TEXEL0, 0, SHADE, 0, TEXEL0, 0,
@@ -39,5 +45,11 @@ void func_80245744_A2F984(void) {
 }
 
 INCLUDE_ASM(s32, "world/area_hos/hos_05/A2EF00", func_80245794_A2F9D4);
+/*
+ApiStatus N(func_80245794_A2F9D4)(ScriptInstance *script, s32 isInitialCall) {
+    N(D_8024DCD0_A37F10) = get_variable(script, *script->ptrReadPos);
+    return ApiStatus_DONE2;
+}
+*/
 
 INCLUDE_ASM(s32, "world/area_hos/hos_05/A2EF00", func_802457C0_A2FA00);

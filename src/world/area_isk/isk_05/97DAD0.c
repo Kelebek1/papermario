@@ -39,5 +39,11 @@ INCLUDE_ASM(s32, "world/area_isk/isk_05/97DAD0", func_80241C5C_97F72C);
 INCLUDE_ASM(s32, "world/area_isk/isk_05/97DAD0", func_80241D44_97F814);
 
 INCLUDE_ASM(s32, "world/area_isk/isk_05/97DAD0", func_80241DF8_97F8C8);
+/*
+ApiStatus N(func_80241DF8_97F8C8)(ScriptInstance *script, s32 isInitialCall) {
+    N(D_8024264C_98011C) = get_variable(script, *script->ptrReadPos);
+    return ApiStatus_DONE2;
+}
+*/
 
 INCLUDE_ASM(s32, "world/area_isk/isk_05/97DAD0", func_80241E24_97F8F4);

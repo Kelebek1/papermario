@@ -7,7 +7,7 @@ if not RUN_ME:
     print(f"Are you sure you want to run this? Edit RUN_ME in the script if so")
     exit()
 
-WRITE_FILE = True
+WRITE_FILE = False
 DO_OVERWRITE = True
 DO_OVERWRITE_DECOMP = False
 
@@ -169,15 +169,15 @@ for file in files[1:]:
                 '''
                 if asm_path.is_file():
                     asm_data = asm_path.read_text().splitlines()
-                    for asm_line in asm_data:
-                        if "lui" in asm_line and "ldc1" in asm_data[x+1] and asm_line.count("_") == 2:
-                            new_data_name = asm_line.split(" ")[-1]
+                    for x,asm_line in enumerate(asm_data):
+                        if "lui" in asm_line and "sw" in asm_data[x+1] and asm_line.count("_") == 2:
+                            new_data_name = asm_line.split("(",1)[1].split(")",1)[0]
                             break
                     else:
                         print(f"Failed to find new data name")
                         exit()
 
-                    old_data_name = "N(" + func_data[8].split("N(",1)[1].split(")",1)[0] + ")"
+                    old_data_name = "N(" + func_data[2].split("N(",1)[1].split(")",1)[0] + ")"
                     func_data = function_text.replace(old_data_name, "N(" + new_data_name + ")").splitlines()
                 '''
                 '''
