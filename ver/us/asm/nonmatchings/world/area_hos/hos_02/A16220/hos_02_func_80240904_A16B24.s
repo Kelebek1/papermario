@@ -1,6 +1,14 @@
 .set noat      # allow manual use of $at
 .set noreorder # don't insert nops after branches
 
+.section .rodata
+glabel D_80244E00_A1B020
+.double 67.45098039215686
+
+glabel D_80244E08_A1B028
+.double 59.21568627450981
+
+.section .text
 glabel func_80240904_A16B24
 /* A16B24 80240904 27BDFFC0 */  addiu     $sp, $sp, -0x40
 /* A16B28 80240908 24040002 */  addiu     $a0, $zero, 2
@@ -33,8 +41,8 @@ glabel func_80240904_A16B24
 /* A16B90 80240970 00031040 */  sll       $v0, $v1, 1
 /* A16B94 80240974 00431021 */  addu      $v0, $v0, $v1
 /* A16B98 80240978 02021023 */  subu      $v0, $s0, $v0
-/* A16B9C 8024097C 3C038024 */  lui       $v1, %hi(D_802433B2_A195D2)
-/* A16BA0 80240980 946333B2 */  lhu       $v1, %lo(D_802433B2_A195D2)($v1)
+/* A16B9C 8024097C 3C038024 */  lui       $v1, %hi(hos_02_D_802433B2_A195D2)
+/* A16BA0 80240980 946333B2 */  lhu       $v1, %lo(hos_02_D_802433B2_A195D2)($v1)
 /* A16BA4 80240984 24420001 */  addiu     $v0, $v0, 1
 /* A16BA8 80240988 00620018 */  mult      $v1, $v0
 /* A16BAC 8024098C 8FA20014 */  lw        $v0, 0x14($sp)
@@ -120,8 +128,8 @@ glabel func_80240904_A16B24
 /* A16CD4 80240AB4 02031821 */  addu      $v1, $s0, $v1
 /* A16CD8 80240AB8 00032843 */  sra       $a1, $v1, 1
 /* A16CDC 80240ABC 00B20018 */  mult      $a1, $s2
-/* A16CE0 80240AC0 3C048024 */  lui       $a0, %hi(D_802433B2_A195D2)
-/* A16CE4 80240AC4 948433B2 */  lhu       $a0, %lo(D_802433B2_A195D2)($a0)
+/* A16CE0 80240AC0 3C048024 */  lui       $a0, %hi(hos_02_D_802433B2_A195D2)
+/* A16CE4 80240AC4 948433B2 */  lhu       $a0, %lo(hos_02_D_802433B2_A195D2)($a0)
 /* A16CE8 80240AC8 00031FC3 */  sra       $v1, $v1, 0x1f
 /* A16CEC 80240ACC 000433C2 */  srl       $a2, $a0, 0xf
 /* A16CF0 80240AD0 00004810 */  mfhi      $t1
@@ -188,8 +196,8 @@ glabel func_80240904_A16B24
 /* A16DD4 80240BB4 3C02DE00 */  lui       $v0, 0xde00
 /* A16DD8 80240BB8 0C0470BB */  jal       func_8011C2EC
 /* A16DDC 80240BBC AE020000 */   sw       $v0, ($s0)
-/* A16DE0 80240BC0 3C048024 */  lui       $a0, %hi(D_802433B2_A195D2)
-/* A16DE4 80240BC4 248433B2 */  addiu     $a0, $a0, %lo(D_802433B2_A195D2)
+/* A16DE0 80240BC0 3C048024 */  lui       $a0, %hi(hos_02_D_802433B2_A195D2)
+/* A16DE4 80240BC4 248433B2 */  addiu     $a0, $a0, %lo(hos_02_D_802433B2_A195D2)
 /* A16DE8 80240BC8 94830000 */  lhu       $v1, ($a0)
 /* A16DEC 80240BCC AE020004 */  sw        $v0, 4($s0)
 /* A16DF0 80240BD0 24630253 */  addiu     $v1, $v1, 0x253

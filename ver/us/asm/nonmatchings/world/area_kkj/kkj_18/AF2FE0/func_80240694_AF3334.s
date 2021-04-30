@@ -1,6 +1,7 @@
 .set noat      # allow manual use of $at
 .set noreorder # don't insert nops after branches
 
+.section .text
 glabel func_80240694_AF3334
 /* AF3334 80240694 27BDFFE8 */  addiu     $sp, $sp, -0x18
 /* AF3338 80240698 AFBF0010 */  sw        $ra, 0x10($sp)
@@ -13,8 +14,8 @@ glabel func_80240694_AF3334
 /* AF3354 802406B4 8C620000 */  lw        $v0, ($v1)
 /* AF3358 802406B8 5040000A */  beql      $v0, $zero, .L802406E4
 /* AF335C 802406BC 00041080 */   sll      $v0, $a0, 2
-/* AF3360 802406C0 3C058024 */  lui       $a1, %hi(D_80244E78_A1B098)
-/* AF3364 802406C4 24A54E78 */  addiu     $a1, $a1, %lo(D_80244E78_A1B098)
+/* AF3360 802406C0 3C058024 */  lui       $a1, %hi(kkj_rodata_sym)
+/* AF3364 802406C4 24A54E78 */  addiu     $a1, $a1, %lo(kkj_rodata_sym)
 .L802406C8:
 /* AF3368 802406C8 24630004 */  addiu     $v1, $v1, 4
 /* AF336C 802406CC 24840001 */  addiu     $a0, $a0, 1
@@ -24,14 +25,14 @@ glabel func_80240694_AF3334
 /* AF337C 802406DC 24A50004 */   addiu    $a1, $a1, 4
 /* AF3380 802406E0 00041080 */  sll       $v0, $a0, 2
 .L802406E4:
-/* AF3384 802406E4 3C018024 */  lui       $at, %hi(D_80244E78_A1B098)
+/* AF3384 802406E4 3C018024 */  lui       $at, %hi(kkj_rodata_sym)
 /* AF3388 802406E8 00220821 */  addu      $at, $at, $v0
-/* AF338C 802406EC AC204E78 */  sw        $zero, %lo(D_80244E78_A1B098)($at)
+/* AF338C 802406EC AC204E78 */  sw        $zero, %lo(kkj_rodata_sym)($at)
 /* AF3390 802406F0 080901C8 */  j         .L80240720
 /* AF3394 802406F4 00000000 */   nop
 .L802406F8:
-/* AF3398 802406F8 3C038024 */  lui       $v1, %hi(D_80244E78_A1B098)
-/* AF339C 802406FC 24634E78 */  addiu     $v1, $v1, %lo(D_80244E78_A1B098)
+/* AF3398 802406F8 3C038024 */  lui       $v1, %hi(kkj_rodata_sym)
+/* AF339C 802406FC 24634E78 */  addiu     $v1, $v1, %lo(kkj_rodata_sym)
 /* AF33A0 80240700 0060282D */  daddu     $a1, $v1, $zero
 .L80240704:
 /* AF33A4 80240704 24820080 */  addiu     $v0, $a0, 0x80

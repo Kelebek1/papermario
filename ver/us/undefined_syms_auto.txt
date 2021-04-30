@@ -2576,3 +2576,4 @@ jtbl_80232A20_6847A0 = 0x80232A20;
 jtbl_80228450_6CBFE0 = 0x80228450;
 pra_09_bss_sym = 0x80246A20;
 obk_01_bss_sym = 0x802458F0;
+kkj_rodata_sym = 0x80244E78;
