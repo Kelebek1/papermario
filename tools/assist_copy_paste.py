@@ -2,9 +2,9 @@ import sys
 from pathlib import Path
 import re
 
-RUN_ME = False
+RUN_ME = True
 if not RUN_ME:
-    print(f"Are you sure yo uwant to run this? Edit RUN_ME in the script if so")
+    print(f"Are you sure you want to run this? Edit RUN_ME in the script if so")
     exit()
 
 WRITE_FILE = True

@@ -1,22 +1,15 @@
 from pathlib import Path
 
-RUN_ME = False
+RUN_ME = True
 if not RUN_ME:
-    print(f"Are you sure yo uwant to run this? Edit RUN_ME in the script if so")
+    print(f"Are you sure you want to run this? Edit RUN_ME in the script if so")
     exit()
     
-FUNC="""    Enemy* enemy = script->owner1.enemy;
-    Npc* npc = get_npc_unsafe(enemy->npcID);
-
-    npc->duration--;
-    if (npc->duration <= 0) {
-        enemy->varTable[2] = 0;
-        npc->duration = 0;
-        script->functionTemp[0].s = 0;
-    }
+FUNC="""    gCameras->flags |= 0x1000;
+    return ApiStatus_DONE2;
 }""".splitlines()
 
-NEW_FUNC_NAME = f"UnkFunc45"
+NEW_FUNC_NAME = f"UnkFunc46"
 NEW_INCLUDE = f"#include \"world/common/{NEW_FUNC_NAME}.inc.c\""
 
 RENAMED = []

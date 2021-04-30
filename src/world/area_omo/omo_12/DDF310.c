@@ -4,7 +4,7 @@
 
 INCLUDE_ASM(s32, "world/area_omo/omo_12/DDF310", func_80240184_DDF494);
 
-INCLUDE_ASM(s32, "world/area_omo/omo_12/DDF310", func_802402DC_DDF5EC);
+#include "world/common/UnkFunc46.inc.c"
 
 INCLUDE_ASM(s32, "world/area_omo/omo_12/DDF310", func_802402F8_DDF608);
 

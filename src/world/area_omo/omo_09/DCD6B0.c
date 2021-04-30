@@ -208,6 +208,6 @@ INCLUDE_ASM(s32, "world/area_omo/omo_09/DCD6B0", func_8024356C_DD023C);
 
 INCLUDE_ASM(s32, "world/area_omo/omo_09/DCD6B0", func_802435B8_DD0288);
 
-INCLUDE_ASM(s32, "world/area_omo/omo_09/DCD6B0", func_802435CC_DD029C);
+#include "world/common/UnkFunc46.inc.c"
 
 INCLUDE_ASM(s32, "world/area_omo/omo_09/DCD6B0", func_802435E8_DD02B8);

@@ -878,7 +878,7 @@ Script N(80242F20) = SCRIPT({
     SetNpcAnimation(NPC_TWINK, NPC_ANIM(twink, Palette_00, Anim_1));
     NpcFacePlayer(NPC_TWINK, 0);
     SpeakToPlayer(NPC_TWINK, NPC_ANIM(twink, Palette_00, Anim_C), NPC_ANIM(twink, Palette_00, Anim_1), 0, MESSAGE_ID(0x0A, 0x000E));
-    N(func_80240B20_A0C810)();
+    N(UnkFunc46)();
     GetPlayerPos(SI_VAR(0), SI_VAR(1), SI_VAR(2));
     SI_VAR(0) += -20;
     UseSettingsFrom(0, SI_VAR(0), SI_VAR(1), SI_VAR(2));

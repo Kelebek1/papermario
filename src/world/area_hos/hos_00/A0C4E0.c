@@ -62,10 +62,7 @@ ApiStatus N(func_80240A54_A0C744)(ScriptInstance *script, s32 isInitialCall) {
     return ApiStatus_DONE2;
 }
 
-ApiStatus N(func_80240B20_A0C810)(ScriptInstance *script, s32 isInitialCall) {
-    gCameras->flags |= 0x1000;
-    return ApiStatus_DONE2;
-}
+#include "world/common/UnkFunc46.inc.c"
 
 ApiStatus N(func_80240B3C_A0C82C)(ScriptInstance *script, s32 isInitialCall) {
     s32 var0 = script->varTable[0];
