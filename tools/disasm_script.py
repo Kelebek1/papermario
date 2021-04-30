@@ -272,13 +272,13 @@ def fix_args(self, func, args, info):
                 new_args.append(f"{CONSTANTS[info[i]][argNum]}")
             else:
                 if not (info[i] == "NpcIDs" and argNum > 0):
-                    print(f"0x{argNum:X} was not found within {info[i]} constants for function {func} arg {i}, add it.")
+                    print(f"0x{argNum & 0xFFFFFFFF:X} was not found within {info[i]} constants for function {func} arg {i}, add it.")
 
                 if (info[i] == "ItemIDs" and argNum < 0):
-                    new_args.append(f"{int(argNum)}")
+                    new_args.append(f"{argNum}")
                 else:
                     #Print the unknowns in hex
-                    new_args.append(f"0x{int(argNum):X}")
+                    new_args.append(f"0x{argNum & 0xFFFFFFFF:X}")
 
         else:
             new_args.append(f"{arg}")
@@ -372,6 +372,7 @@ replace_funcs = {
     "SetNpcSprite"              :{1:"Hex"},
     "SetNpcYaw"                 :{0:"NpcIDs"},
     "SetPlayerAnimation"        :{0:"PlayerAnims"},
+    "SetPlayerFlagBits"         :{0:"Hex"},
     "SetSelfEnemyFlagBits"      :{0:"NpcFlags", 1:"Bool"},
     #"SetSelfVar"                :{1:"Bool"}, # apparently this was a bool in some scripts but it passes non-0/1 values, including negatives
     "SetTargetActor"            :{0:"ActorIDs"},
@@ -533,7 +534,7 @@ class ScriptDisassembler:
     def addr_ref(self, addr, isArg=False):
         if addr in self.symbol_map:
             return self.replace_star_rod_prefix(addr, isArg)
-        return f"0x{addr:08X}"
+        return self.var(addr)
 
     def trigger(self, trigger):
         if trigger == 0x00000040: trigger = "TRIGGER_WALL_PUSH"

@@ -210,6 +210,7 @@ s32 does_script_exist(s32 id);
 s32 does_script_exist_by_ref(ScriptInstance* script);
 ScriptInstance* start_script(Script* source, s32 priority, s32 initialState);
 ScriptInstance* start_script_in_group(Script* source, u8 priority, u8 initialState, u8 groupFlags);
+void func_8006FE30(s32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7);
 
 void set_animation_rate(ActorID actorID, s32 partIndex, f32 rate);
 void func_8011B7C0(u16, s32, s32);

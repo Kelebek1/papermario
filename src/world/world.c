@@ -23,7 +23,6 @@ const s32 D_800989A0[] = {
 extern MapConfig D_800A41E8; // gMapHeader?
 extern s32 D_800A41E0; // gMapConfig?
 
-
 extern s32 D_800D9668;
 
 typedef struct {

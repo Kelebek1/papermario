@@ -268,7 +268,7 @@ ApiStatus IsStartingConversation(ScriptInstance* script, s32 isInitialCall);
 ApiStatus func_802D5830(ScriptInstance* script, s32 isInitialCall);
 ApiStatus func_802D3474(ScriptInstance* script, s32 isInitialCall);
 ApiStatus SetNpcSprite(ScriptInstance* script, s32 isInitialCall);
-
+ApiStatus Spawn802D9D50(ScriptInstance* script, s32 isInitialCall);
 ApiStatus func_802D3624(ScriptInstance* script, s32 isInitialCall);
 ApiStatus func_802D36E0(ScriptInstance* script, s32 isInitialCall);
 ApiStatus func_802D38EC(ScriptInstance* script, s32 isInitialCall);

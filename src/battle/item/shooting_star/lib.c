@@ -56,8 +56,6 @@ ApiStatus N(GiveRefundCleanup)(ScriptInstance* script, s32 isInitialCall) {
 
 #ifdef NON_MATCHING
 
-void func_8006FE30(s32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 arg4, f32 arg5, f32 arg6, f32 arg7);
-
 ApiStatus N(func_802A123C_71D9AC)(ScriptInstance* script, s32 isInitialCall) {
     s32 c8 = 200;
     s32 temp_s1 = 100 + rand_int(c8);

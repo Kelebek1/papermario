@@ -6232,19 +6232,14 @@ segments:
     start: 0xA0BCF0
     vram: 0x80240000
     subsegments:
-    - [0xA0BCF0, c]
-    - [0xA0BD40, c]
-    - [0xA0C4B0, c]
-    - [0xA0C4E0, c]
-    - [0xA0C930, c]
-    - [0xA0CA00, data]
-    - [0xA0D720, data]
-    - [0xA0D7A0, data]
-    - [0xA0E520, data]
-    - [0xA107E0, data]
-    - [0xA10820, rodata]
-    - [0xA10830, rodata]
-    - [0xA10870, rodata]
+    - [0xA0BCF0,       c, A0BCF0]
+    - [0xA0BD40,       c, A0BD40]
+    - [0xA0C4B0,       c, A0C4B0]
+    - [0xA0C4E0,       c, A0C4E0]
+    - [0xA0C930,       c, A0C930]
+    - [0xA0CA00,   .data, A0BD40]
+    - [0xA10820, .rodata, A0BCF0]
+    - [0xA10830, .rodata, A0BD40]
   - name: hos_01
     dir: world/area_hos/hos_01
     type: code
@@ -9944,8 +9939,8 @@ segments:
     start: 0xE1E460
     vram: 0x80240000
     subsegments:
-    - [0xE1E460, c]
-    - [0xE1EC20, data]
+    - [0xE1E460,     c, E1E460]
+    - [0xE1EC20, .data, E1E460]
   - type: code
     overlay: True
     start: 0xE20110

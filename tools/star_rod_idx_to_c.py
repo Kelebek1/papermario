@@ -643,9 +643,12 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
             bytes.read(0x10)
 
             main,entry_list,entry_count = unpack(">IIi", bytes.read(4 * 3))
-            out += f"    .main = &N(main),\n"
-            out += f"    .entryList = &{entry_list_name},\n"
-            out += f"    .entryCount = ENTRY_COUNT({entry_list_name}),\n"
+            print(hex(main))
+            if main != 0:
+                out += f"    .main = &N(main),\n"
+            if entry_list != 0:
+                out += f"    .entryList = &{entry_list_name},\n"
+                out += f"    .entryCount = ENTRY_COUNT({entry_list_name}),\n"
 
             bytes.read(0x1C)
 
@@ -654,9 +657,9 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
                 out += f"    .background = &gBackgroundImage,\n"
             elif bg != 0:
                 raise Exception(f"unknown MapConfig background {bg:X}")
-            #out += f"    .tattle = 0x{tattle:X},\n"
-            INCLUDES_NEEDED["tattle"].append(f"- [0x{(tattle & 0xFF0000) >> 16:02X}, 0x{tattle & 0xFFFF:04X}, {map_name}_tattle]")
-            out += f"    .tattle = {{ MSG_{map_name}_tattle }},\n"
+            if tattle != 0:
+                INCLUDES_NEEDED["tattle"].append(f"- [0x{(tattle & 0xFF0000) >> 16:02X}, 0x{tattle & 0xFFFF:04X}, {map_name}_tattle]")
+                out += f"    .tattle = {{ MSG_{map_name}_tattle }},\n"
 
             out += f"}};\n"
             afterHeader = True
