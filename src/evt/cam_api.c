@@ -260,7 +260,16 @@ ApiStatus PanToTarget(ScriptInstance* script, s32 isInitialCall) {
 
 INCLUDE_ASM(s32, "evt/cam_api", UseSettingsFrom, ScriptInstance* script, s32 isInitialCall);
 
-INCLUDE_ASM(s32, "evt/cam_api", LoadSettings, ScriptInstance* script, s32 isInitialCall);
+ApiStatus LoadSettings(ScriptInstance *script, s32 isInitialCall) {
+    Bytecode* args = script->ptrReadPos;
+    s32 cameraIdx = get_variable(script, *args++);
+    Camera* camera = &gCameras[cameraIdx];
+    CameraController* controller = get_variable(script, *args++);
+
+    camera->controller = *controller;
+    
+    return ApiStatus_DONE2;
+}
 
 ApiStatus SetCamType(ScriptInstance* script, s32 isInitialCall) {
     Bytecode* args = script->ptrReadPos;
@@ -270,8 +279,8 @@ ApiStatus SetCamType(ScriptInstance* script, s32 isInitialCall) {
     s32 controllerType = get_variable(script, *args++);
     s32 enabled = get_variable(script, *args++);
 
-    camera->unk_500 = enabled;
-    camera->controllerType = controllerType;
+    camera->controller.flag = enabled;
+    camera->controller.type = controllerType;
     return ApiStatus_DONE2;
 }
 
@@ -283,8 +292,8 @@ ApiStatus SetCamPitch(ScriptInstance* script, s32 isInitialCall) {
     f32 boomPitch = get_float_variable(script, *args++);
     f32 viewPitch = get_float_variable(script, *args++);
 
-    camera->controllerBoomPitch = boomPitch;
-    camera->controllerViewPitch = viewPitch;
+    camera->controller.boomPitch = boomPitch;
+    camera->controller.viewPitch = viewPitch;
     return ApiStatus_DONE2;
 }
 
@@ -295,7 +304,7 @@ ApiStatus SetCamDistance(ScriptInstance* script, s32 isInitialCall) {
     Camera* camera = &cameras[id];
     f32 boomLength = get_float_variable(script, *args++);
 
-    camera->controllerBoomLen = boomLength;
+    camera->controller.boomLength = boomLength;
     return ApiStatus_DONE2;
 }
 
@@ -307,8 +316,8 @@ ApiStatus SetCamPosA(ScriptInstance* script, s32 isInitialCall) {
     f32 x = get_float_variable(script, *args++);
     f32 z = get_float_variable(script, *args++);
 
-    camera->posA.x = x;
-    camera->posA.z = z;
+    camera->controller.position.x = x;
+    camera->controller.position.z = z;
     return ApiStatus_DONE2;
 }
 
@@ -320,8 +329,8 @@ ApiStatus SetCamPosB(ScriptInstance* script, s32 isInitialCall) {
     f32 x = get_float_variable(script, *args++);
     f32 z = get_float_variable(script, *args++);
 
-    camera->posB.x = x;
-    camera->posB.z = z;
+    camera->controller.orientation.x = x;
+    camera->controller.orientation.z = z;
     return ApiStatus_DONE2;
 }
 
@@ -333,8 +342,8 @@ ApiStatus SetCamPosC(ScriptInstance* script, s32 isInitialCall) {
     f32 y1 = get_float_variable(script, *args++);
     f32 y2 = get_float_variable(script, *args++);
 
-    camera->posA.y = y1;
-    camera->posB.y = y2;
+    camera->controller.position.y = y1;
+    camera->controller.orientation.y = y2;
     return ApiStatus_DONE2;
 }
 
@@ -373,8 +382,8 @@ ApiStatus GetCamType(ScriptInstance* script, s32 isInitialCall) {
     Camera* cameras = gCameras;
     Camera* camera = &cameras[id];
 
-    set_variable(script, outVar1, camera->controllerType);
-    set_variable(script, outVar2, camera->unk_500);
+    set_variable(script, outVar1, camera->controller.type);
+    set_variable(script, outVar2, camera->controller.flag);
     return ApiStatus_DONE2;
 }
 
@@ -386,8 +395,8 @@ ApiStatus GetCamPitch(ScriptInstance* script, s32 isInitialCall) {
     Camera* cameras = gCameras;
     Camera* camera = &cameras[id];
 
-    set_float_variable(script, outVar1, camera->controllerBoomPitch);
-    set_float_variable(script, outVar2, camera->controllerViewPitch);
+    set_float_variable(script, outVar1, camera->controller.boomPitch);
+    set_float_variable(script, outVar2, camera->controller.viewPitch);
     return ApiStatus_DONE2;
 }
 
@@ -398,7 +407,7 @@ ApiStatus GetCamDistance(ScriptInstance* script, s32 isInitialCall) {
     Camera* cameras = gCameras;
     Camera* camera = &cameras[id];
 
-    set_float_variable(script, outVar1, camera->controllerBoomLen);
+    set_float_variable(script, outVar1, camera->controller.boomLength);
     return ApiStatus_DONE2;
 }
 
@@ -410,8 +419,8 @@ ApiStatus GetCamPosA(ScriptInstance* script, s32 isInitialCall) {
     Camera* cameras = gCameras;
     Camera* camera = &cameras[id];
 
-    set_float_variable(script, outVar1, camera->posA.x);
-    set_float_variable(script, outVar2, camera->posA.z);
+    set_float_variable(script, outVar1, camera->controller.position.x);
+    set_float_variable(script, outVar2, camera->controller.position.z);
     return ApiStatus_DONE2;
 }
 
@@ -423,8 +432,8 @@ ApiStatus GetCamPosB(ScriptInstance* script, s32 isInitialCall) {
     Camera* cameras = gCameras;
     Camera* camera = &cameras[id];
 
-    set_float_variable(script, outVar1, camera->posB.x);
-    set_float_variable(script, outVar2, camera->posB.z);
+    set_float_variable(script, outVar1, camera->controller.orientation.x);
+    set_float_variable(script, outVar2, camera->controller.orientation.z);
     return ApiStatus_DONE2;
 }
 
@@ -436,8 +445,8 @@ ApiStatus GetCamPosC(ScriptInstance* script, s32 isInitialCall) {
     Camera* cameras = gCameras;
     Camera* camera = &cameras[id];
 
-    set_float_variable(script, outVar1, camera->posA.y);
-    set_float_variable(script, outVar2, camera->posB.y);
+    set_float_variable(script, outVar1, camera->controller.position.y);
+    set_float_variable(script, outVar2, camera->controller.orientation.y);
     return ApiStatus_DONE2;
 }
 

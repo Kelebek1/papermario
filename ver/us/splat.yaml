@@ -6288,22 +6288,18 @@ segments:
     start: 0xA26ED0
     vram: 0x80240000
     subsegments:
-    - [0xA26ED0, c]
-    - [0xA27490, c]
-    - [0xA274B0, c]
-    - [0xA27A30, c]
-    - [0xA27AA0, c]
-    - [0xA27D60, data]
-    - [0xA27F20, data]
-    - [0xA285C0, data]
-    - [0xA28920, data]
-    - [0xA28990, data]
-    # - [0xA289F4, data]
-    - [0xA290B0, data]
-    - [0xA2A120, data]
-    - [0xA2A1C0, rodata]
-    - [0xA2A1E0, rodata]
-    - [0xA2A1F8, rodata]
+    - [0xA26ED0,       c, A26ED0]
+    - [0xA27490,       c, A27490]
+    - [0xA274B0,       c, A274B0]
+    - [0xA27A30,       c, A27A30]
+    - [0xA27AA0,       c, A27AA0]
+    - [0xA27D60,   .data, A26ED0]
+    - [0xA290B0,   .data, A27AA0]
+    - [0xA2A1C0, .rodata, A26ED0]
+    - [0xA2A1E0, .rodata, A274B0]
+    - [0xA2A200, .rodata, A27AA0]
+    - [0xA2A240,    .bss, A274B0]
+    - [0xA2A240,    .bss, A27AA0]
   - name: hos_05
     dir: world/area_hos/hos_05
     type: code

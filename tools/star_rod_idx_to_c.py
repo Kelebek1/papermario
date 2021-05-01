@@ -1005,24 +1005,37 @@ def disassemble(bytes, midx, symbol_map={}, comments=True, romstart=0):
                 vram = int(name.split("_",1)[1][:-1], 16)
                 name = f"N(D_{vram:X}_{(vram - 0x80240000) + romstart:X})"
                 struct["name"] = name
+                symbol_map[struct["vaddr"]][0][1] = name
 
             if struct["type"] == "Padding":
                 out += "static "
-            if struct["length"] // 4 > 1:
-                out += f"s32 {name}[] = {{"
+
+            data = bytes.read(struct["length"])
+
+            # test if all floats
+            if (struct["length"] // 4 > 1 or unpack_from(">f", data, 0)[0] != 0.0) and all(["e" not in f"{x:f}" and float(x) >= -1000.0 and float(x) <= 1000.0 for x in unpack_from(f">{struct['length']//4}f", data, 0)]):
+                out += f"f32 "
+                data = unpack_from(f">{struct['length']//4}f", data, 0)
             else:
-                out += f"s32 {name} = {{"
+                out += f"s32 "
+                data = unpack_from(f">{struct['length']//4}I", data, 0)
 
-            for i in range(0, struct["length"], 4):
-                if (i % 0x20) == 0:
+            if struct["length"] // 4 > 1:
+                out += f"{name}[] = {{"
+            else:
+                out += f"{name} = {{"
+
+            for i,word in enumerate(data):
+                if (i % 4) == 0:
                     out += f"\n   "
-
-                word = int.from_bytes(bytes.read(4), byteorder="big")
 
                 if word in symbol_map:
                     out += f" {symbol_map[word][0][1]},"
                 else:
-                    out += f" 0x{word:08X},"
+                    if type(word) is float:
+                        out += f" {word:.01f}f,"
+                    else:
+                        out += f" 0x{word:08X},"
 
             out += f"\n}};\n"
 

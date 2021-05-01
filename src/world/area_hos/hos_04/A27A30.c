@@ -1,3 +1,16 @@
 #include "hos_04.h"
 
-INCLUDE_ASM(s32, "world/area_hos/hos_04/A27A30", func_80240B60_A27A30);
+ApiStatus N(func_80240B60_A27A30)(ScriptInstance *script, s32 isInitialCall) {
+    if (isInitialCall) {
+        script->functionTemp[1].s = 0;
+    }
+
+    script->functionTemp[1].s += 16;
+    if (script->functionTemp[1].s > 255) {
+        script->functionTemp[1].s = 255;
+    }
+
+    set_transition_stencil_zoom_0(0, script->functionTemp[1].s);
+
+    return (script->functionTemp[1].s == 255) * ApiStatus_DONE2;
+}

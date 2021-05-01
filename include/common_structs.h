@@ -472,6 +472,16 @@ typedef struct Collider {
     /* 0x18 */ f32* vertexTable[3];
 } Collider; // size = 0x1C
 
+typedef struct {
+    /* 0x00 */ s32 type;
+    /* 0x04 */ f32 boomLength;
+    /* 0x08 */ f32 boomPitch;
+    /* 0x0C */ Vec3f position;
+    /* 0x18 */ Vec3f orientation;
+    /* 0x24 */ f32 viewPitch;
+    /* 0x28 */ s32 flag;
+} CameraController; // size = 0x2C
+
 typedef struct Camera {
     /* 0x000 */ s16 flags;
     /* 0x002 */ s16 moveFlags;
@@ -523,8 +533,8 @@ typedef struct Camera {
     /* 0x1D4 */ char unk_1D4[48];
     /* 0x204 */ struct Matrix4s* unkMatrix;
     /* 0x208 */ char unk_208[572];
-    /* 0x444 */ struct Zone* prevZone;
-    /* 0x448 */ struct Zone* currentZone;
+    /* 0x444 */ struct CameraController* prevZone;
+    /* 0x448 */ struct CameraController* currentZone;
     /* 0x44C */ struct CamPosSettings initialSettings; /* for start of blend between zones */
     /* 0x468 */ struct CamPosSettings targetSettings; /* goal for blend between zones */
     /* 0x484 */ f32 sinInterpAlpha;
@@ -536,13 +546,15 @@ typedef struct Camera {
     /* 0x4A0 */ char unk_4A0[0x10];
     /* 0x4B0 */ Vec3f movePos;
     /* 0x4BC */ char unk_4BC[28];
-    /* 0x4D8 */ s32 controllerType;
-    /* 0x4DC */ f32 controllerBoomLen;
-    /* 0x4E0 */ f32 controllerBoomPitch;
-    /* 0x4E4 */ Vec3f posA;
-    /* 0x4F0 */ Vec3f posB;
-    /* 0x4FC */ f32 controllerViewPitch;
-    /* 0x500 */ s32 unk_500;
+    CameraController controller;
+    ///* 0x4D8 */ s32 controllerType;
+    ///* 0x4DC */ f32 controllerBoomLen;
+    ///* 0x4E0 */ f32 controllerBoomPitch;
+    ///* 0x4E4 */ Vec3f posA;
+    ///* 0x4F0 */ Vec3f posB;
+    ///* 0x4FC */ f32 controllerViewPitch;
+    ///* 0x500 */ s32 unk_500;
+    
     /* 0x504 */ s16 boolTargetPlayer;
     /* 0x506 */ u16 unk_506;
     /* 0x508 */ f32 panPhase;
@@ -1445,15 +1457,6 @@ typedef struct CollisionHeader {
     /* 0x14 */ s32 bbTableOffset;
     /* 0x18 */ char unk_18[8];
 } CollisionHeader; // size = 0x20
-
-typedef struct Zone {
-    /* 0x00 */ s32 type;
-    /* 0x04 */ f32 boomLength;
-    /* 0x08 */ f32 boomPitch;
-    /* 0x0C */ f32 pos[6];
-    /* 0x24 */ f32 viewPitch;
-    /* 0x28 */ s32 flag;
-} Zone; // size = 0x2C
 
 typedef struct ActorMovement {
     /* 0x00 */ Vec3f currentPos;
