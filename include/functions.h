@@ -316,6 +316,7 @@ extern f32 gCurtainFade;
 extern f32 gCurtainFadeGoal;
 extern UNK_FUN_PTR(gCurtainDrawCallback);
 void func_802DDA8C(s32, s32, f32);
+s32 test_ray_zones(f32, f32, f32, f32, f32, f32, f32*, f32*, f32*, f32*, f32*, f32*, f32*);
 
 void initialize_curtains(void);
 void update_curtains(void);
@@ -339,6 +340,7 @@ f32 dead_set_float_variable(ScriptInstance* script, Bytecode var, f32 value);
 
 f32 dead_cos_rad(f32 x);
 f32 dead_atan2(f32 startX, f32 startZ, f32 endX, f32 endZ);
+void start_rumble(s32 freq, s32 frame);
 
 s32 create_dynamic_entity_world(void (*updateFunc)(void), void (*drawFunc)(void));
 EntityModel* get_entity_model(s32 idx);

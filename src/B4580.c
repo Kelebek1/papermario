@@ -12,7 +12,25 @@ INCLUDE_ASM(s32, "B4580", func_8011E09C);
 
 INCLUDE_ASM(s32, "B4580", func_8011E0DC);
 
-INCLUDE_ASM(s32, "B4580", func_8011E150);
+void *func_8011E150(Unk_AnimatedMesh_struct_at_unk_10* ptr, s32 arg1) {
+    s32 i;
+    void* ret;
+
+    if (ptr->unk_FC == arg1) {
+        return ptr;
+    }
+
+    for (i = 0; i < 32; i++) {
+        if (ptr->unk_04[i] != 0) {
+            ret = func_8011E150(ptr->unk_04[i], arg1);
+            if (ret != NULL) {
+                return ret;
+            }
+        }
+    }
+
+    return NULL;
+}
 
 INCLUDE_ASM(s32, "B4580", func_8011E1C4);
 
@@ -52,7 +70,9 @@ INCLUDE_ASM(s32, "B4580", func_8011FA54);
 
 INCLUDE_ASM(s32, "B4580", func_8011FF74);
 
-INCLUDE_ASM(s32, "B4580", func_8011FF98);
+void* func_8011FF98(AnimatedMesh* mesh, s32 arg1) {
+    return func_8011E150(mesh->unk_10, arg1);
+}
 
 INCLUDE_ASM(s32, "B4580", func_8011FFB4);
 

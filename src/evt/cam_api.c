@@ -1,5 +1,12 @@
 #include "common.h"
 
+typedef struct {
+    char unk_00[0x10];
+    CameraController* controller;
+    char unk_14[0x8];
+} Unk_camera_controller_struct;
+extern Unk_camera_controller_struct (*D_800D91D4)[];
+
 Script ShakeCam1 = SCRIPT({
     group 0;
     ShakeCam(SI_VAR(0), SI_VAR(1), SI_VAR(2), 1.0);
@@ -189,9 +196,152 @@ ApiStatus SetCamTarget(ScriptInstance* script, s32 isInitialCall) {
     return ApiStatus_DONE2;
 }
 
-INCLUDE_ASM(s32, "evt/cam_api", func_802CB008, ScriptInstance* script, s32 isInitialCall);
+typedef struct {
+    Camera* camera;
+    s32 unk_04;
+    f32 unk_08;
+    f32 unk_0C;
+    f32 unk_10;
+    s32 unk_14;
+} Unk_cam_struct; // size = 0x18
 
-INCLUDE_ASM(s32, "evt/cam_api", ShakeCam, ScriptInstance* script, s32 isInitialCall);
+ApiStatus func_802CB008(ScriptInstance *script, s32 isInitialCall) {
+    Bytecode *args = script->ptrReadPos;
+    Unk_cam_struct* ptr;
+    Camera* camera;
+
+    if (isInitialCall) {
+        s32 var1 = get_variable(script, *args++);
+        s32 var2 = get_variable(script, *args++);
+        s32 var3 = get_variable(script, *args++);
+        s32 var4 = get_variable(script, *args++);
+        s32 var5 = get_variable(script, *args++);
+        s32 var6 = get_variable(script, *args++);
+        ptr = heap_malloc(0x18);
+        script->userData = ptr;
+        camera = &gCameras[var1];
+
+        ptr->unk_04 = var2;
+        ptr->camera = camera;
+        ptr->unk_14 = var6;
+        switch (ptr->unk_04) {
+            case 0:
+                ptr->unk_08 = (var3 - camera->unk_54) / var6;
+                ptr->unk_0C = (var4 - camera->unk_58) / ptr->unk_14;
+                ptr->unk_10 = (var5 - camera->unk_5C) / ptr->unk_14;
+                break;
+
+            case 1:
+                ptr->unk_08 = (var3 - camera->targetPos.x) / var6;
+                ptr->unk_0C = (var4 - camera->targetPos.y) / ptr->unk_14;
+                ptr->unk_10 = (var5 - camera->targetPos.z) / ptr->unk_14;
+                break;
+        }
+    }
+
+    ptr = (Unk_cam_struct*)script->userData;
+    camera = ptr->camera;
+    switch (ptr->unk_04) {
+        case 0:
+            camera->unk_54 += ptr->unk_08;
+            camera->unk_58 += ptr->unk_0C;
+            camera->unk_5C += ptr->unk_10;
+            break;
+
+        case 1:
+            camera->targetPos.x += ptr->unk_08;
+            camera->targetPos.y += ptr->unk_0C;
+            camera->targetPos.z += ptr->unk_10;
+            break;
+    }
+
+    ptr->unk_14--;
+    if (ptr->unk_14 == 0) {
+        heap_free(script->userData);
+        script->userData = NULL;
+        return ApiStatus_DONE2;
+    }
+
+    return ApiStatus_BLOCK;
+    
+}
+
+ApiStatus ShakeCam(ScriptInstance *script, s32 isInitialCall) {
+    Bytecode* args = script->ptrReadPos;
+    s32 cameraIdx = get_variable(script, *args++);
+    s32 temp_s3 = get_variable(script, *args++);
+    s32 temp_s4 = get_variable(script, *args++);
+    f32 f1 = get_float_variable(script, *args++);
+    Camera* camera = &gCameras[cameraIdx];
+    f32 temp_f20 = 2.0f * f1;
+    f32 freq;
+    
+    if (isInitialCall) {
+        if (temp_s3 >= 0) {
+            if (temp_s3 >= 2) {
+                if (temp_s3 == 2) {
+                    temp_s4 *= 4;
+                }
+            }
+            script->functionTemp[3].f = 1.0f;
+        } else {
+            script->functionTemp[3].f = 1.0f;
+        }
+
+        script->functionTemp[1].s = temp_s4;
+        if (!gGameStatusPtr->isBattle) {
+            u16 frame;
+
+            if (temp_f20 > 10.0f) {
+                temp_f20 = 10.0f;
+            }
+            if (temp_f20 > 6.0f) {
+                freq = 6.0f;
+            } else {
+                freq = temp_f20;
+            }
+
+            freq = (freq * 32.0f) + 64.0f;
+
+            frame = temp_s4;
+            if (temp_s4 < 5) {
+                frame = 5;
+            }
+
+            start_rumble(freq, frame * 2);
+        }
+    }
+    camera->flags |= 8;
+    freq = script->functionTemp[3].f;
+    switch (temp_s3) {
+        case 0:
+            guTranslateF(camera->viewMtxShaking, 0.0f, -freq * temp_f20, 0.0f);
+            script->functionTemp[3].f = -script->functionTemp[3].f;
+            break;
+
+        case 1:
+            guRotateF(camera->viewMtxShaking, freq * temp_f20, 0.0f, 0.0f, 1.0f);
+            script->functionTemp[3].f = -script->functionTemp[3].f;
+            break;
+
+        case 2:
+            guTranslateF(camera->viewMtxShaking, 0.0f, -freq * temp_f20, 0.0f);
+            if ((script->functionTemp[1].s < (temp_s4 * 2)) && (temp_s4 < script->functionTemp[1].s)) {
+                script->functionTemp[3].f = script->functionTemp[3].f * -0.8;
+            } else {
+                script->functionTemp[3].f = -script->functionTemp[3].f;
+            }
+            break;
+    }
+
+    if (script->functionTemp[1].s == 0) {
+        camera->flags &= ~0x8;
+        return ApiStatus_DONE2;
+    }
+
+    script->functionTemp[1].s--;
+    return ApiStatus_BLOCK;
+}
 
 void exec_ShakeCam1(s32 arg0, s32 arg1, s32 arg2) {
     ScriptInstance* script;
@@ -258,7 +408,25 @@ ApiStatus PanToTarget(ScriptInstance* script, s32 isInitialCall) {
     return ApiStatus_DONE2;
 }
 
-INCLUDE_ASM(s32, "evt/cam_api", UseSettingsFrom, ScriptInstance* script, s32 isInitialCall);
+ApiStatus UseSettingsFrom(ScriptInstance *script, s32 isInitialCall) {
+    Bytecode* args = script->ptrReadPos;
+    s32 cameraIdx = get_variable(script, *args++);
+    Camera* camera = &gCameras[cameraIdx];
+    f32 var1 = get_float_variable(script, *args++);
+    f32 var2 = get_float_variable(script, *args++);
+    f32 var3 = get_float_variable(script, *args++);
+    f32 f1, f2, f3, f4, f5, f6, f7;
+    s32 controllerIdx;
+
+    f4 = 32767.0f;
+    controllerIdx = test_ray_zones(var1, var2 + 10.0f, var3, 0.0f, -1.0f, 0.0f, &f1, &f2, &f3, &f4, &f5, &f6, &f7);
+
+    if (controllerIdx >= 0) {
+        camera->controller = *(*D_800D91D4)[controllerIdx].controller;
+    }
+
+    return ApiStatus_DONE2;
+}
 
 ApiStatus LoadSettings(ScriptInstance *script, s32 isInitialCall) {
     Bytecode* args = script->ptrReadPos;
@@ -478,11 +646,127 @@ ApiStatus WaitForCam(ScriptInstance* script, s32 isInitialCall) {
     return ApiStatus_DONE2;
 }
 
-INCLUDE_ASM(s32, "evt/cam_api", SetCamProperties, ScriptInstance* script, s32 isInitialCall);
+ApiStatus SetCamProperties(ScriptInstance *script, s32 isInitialCall) {
+    Bytecode *args = script->ptrReadPos;
+    s32 cameraIdx = get_variable(script, *args++);
+    Camera* camera = &gCameras[cameraIdx];
+    f32 var2 = get_float_variable(script, *args++);
+    f32 var3 = get_float_variable(script, *args++);
+    f32 var4 = get_float_variable(script, *args++);
+    f32 var5 = get_float_variable(script, *args++);
+    f32 var6 = get_float_variable(script, *args++);
+    f32 var7 = get_float_variable(script, *args++);
+    f32 var8 = get_float_variable(script, *args++);
+    PlayerStatus* playerStatus = &gPlayerStatus;
 
-INCLUDE_ASM(s32, "evt/cam_api", AdjustCam, ScriptInstance* script, s32 isInitialCall);
+    if (isInitialCall) {
+        f32 f1, f2, f3, f5, f6, f7;
+        f32 f4 = 32767.0f;
+        s32 controllerIdx = test_ray_zones(var3, var4 + 10.0f, var5, 0.0f, -1.0f, 0.0f, &f1, &f2, &f3, &f4, &f5, &f6, &f7);
+        
+        if (controllerIdx >= 0) {
+            camera->controller = *(*D_800D91D4)[controllerIdx].controller;
+        }
 
-INCLUDE_ASM(s32, "evt/cam_api", ResetCam, ScriptInstance* script, s32 isInitialCall);
+        camera->movePos.x = var3;
+        camera->movePos.y = var4;
+        camera->movePos.z = var5;
+        camera->controller.boomLength = var6;
+        camera->controller.boomPitch = var7;
+        camera->controller.viewPitch = var8;
+        camera->moveSpeed = var2;
+        camera->unk_506 = 1;
+        camera->boolTargetPlayer = 1;
+        camera->panPhase = 0.0f;
+        return ApiStatus_BLOCK;
+        
+    } else if (camera->sinInterpAlpha >= 1.0f) {
+        return ApiStatus_DONE2;
+    }
+
+    return ApiStatus_BLOCK;
+}
+
+ApiStatus AdjustCam(ScriptInstance *script, s32 isInitialCall) {
+    Bytecode *args = script->ptrReadPos;
+    s32 cameraIdx = get_variable(script, *args++);
+    Camera* camera = &gCameras[cameraIdx];
+    f32 var2 = get_float_variable(script, *args++);
+    f32 var3 = get_float_variable(script, *args++);
+    f32 var4 = get_float_variable(script, *args++);
+    f32 var5 = get_float_variable(script, *args++);
+    f32 var6 = get_float_variable(script, *args++);
+    PlayerStatus* playerStatus = &gPlayerStatus;
+
+    if (isInitialCall) {
+        f32 f1, f2, f3, f5, f6, f7;
+        f32 x = playerStatus->position.x;
+        f32 y = playerStatus->position.y;
+        f32 z = playerStatus->position.z;
+        f32 f4 = 32767.0f;
+        s32 controllerIdx = test_ray_zones(x, y + 10.0f, z, 0.0f, -1.0f, 0.0f, &f1, &f2, &f3, &f4, &f5, &f6, &f7);
+        
+        if (controllerIdx >= 0) {
+            camera->controller = *(*D_800D91D4)[controllerIdx].controller;
+        }
+
+        camera->movePos.x = x + var3;
+        camera->movePos.y = y;
+        camera->movePos.z = z;
+        camera->controller.boomLength = var4;
+        camera->controller.boomPitch = var5;
+        camera->controller.viewPitch = var6;
+        camera->moveSpeed = var2;
+        camera->unk_506 = 1;
+        camera->boolTargetPlayer = 1;
+        camera->panPhase = 0.0f;
+        return ApiStatus_BLOCK;
+        
+    } else if (camera->sinInterpAlpha >= 1.0f) {
+        return ApiStatus_DONE2;
+    }
+
+    return ApiStatus_BLOCK;
+}
+
+ApiStatus ResetCam(ScriptInstance *script, s32 isInitialCall) {
+    Bytecode *args = script->ptrReadPos;
+    s32 cameraIdx = get_variable(script, *args++);
+    Camera* camera = &gCameras[cameraIdx];
+    f32 var2 = get_float_variable(script, *args++);
+    PlayerStatus* playerStatus = &gPlayerStatus;
+
+    if (isInitialCall) {
+        f32 f1, f2, f3, f5, f6, f7;
+        f32 x = playerStatus->position.x;
+        f32 y = playerStatus->position.y;
+        f32 z = playerStatus->position.z;
+        f32 f4 = 32767.0f;
+        s32 controllerIdx = test_ray_zones(x, y + 10.0f, z, 0.0f, -1.0f, 0.0f, &f1, &f2, &f3, &f4, &f5, &f6, &f7);
+        
+        if (controllerIdx >= 0) {
+            camera->controller = *(*D_800D91D4)[controllerIdx].controller;
+        }
+
+        camera->movePos.x = x;
+        camera->movePos.y = y;
+        camera->movePos.z = z;
+        camera->moveSpeed = var2;
+        camera->unk_506 = 1;
+        camera->boolTargetPlayer = 1;
+        camera->panPhase = 0.0f;
+        return ApiStatus_BLOCK;
+
+    } else if (camera->sinInterpAlpha >= 1.0f) {
+        camera->unk_506 = 1;
+        camera->boolTargetPlayer = 0;
+        camera->moveSpeed = 1.0f;
+        camera->panPhase = 0.0f;
+        return ApiStatus_DONE2;
+    }
+
+    return ApiStatus_BLOCK;
+}
 
 void func_802CCAC0(void) {
     s32 i;
@@ -496,7 +780,35 @@ void func_802CCAC0(void) {
     }
 }
 
-INCLUDE_ASM(s32, "evt/cam_api", draw_anim_models);
+void draw_anim_models(void) {
+    Matrix4f arg6;
+    Matrix4f arg86;
+    Matrix4f arg26;
+    Matrix4f arg36;
+    Matrix4f arg46;
+    Matrix4f arg56;
+    Matrix4f arg66;
+    Matrix4f arg76;
+    s32 i;
+
+    for (i = 0; i < MAX_ANIMATED_MESHES; i++) {
+        AnimatedModel* model = (*gCurrentMeshAnimationListPtr)[i];
+
+        if (model->animModelID >= 0) {
+            guTranslateF(arg6, model->pos.x, model->pos.y, model->pos.z);
+            guRotateF(arg86, model->rot.x, 1.0f, 0.0f, 0.0f);
+            guRotateF(arg26, model->rot.y, 0.0f, 1.0f, 0.0f);
+            guRotateF(arg36, model->rot.z, 0.0f, 0.0f, 1.0f);
+            guScaleF(arg76, model->scale.x, model->scale.y, model->scale.z);
+            guMtxCatF(arg36, arg86, arg56);
+            guMtxCatF(arg56, arg26, arg46);
+            guMtxCatF(arg76, arg46, arg56);
+            guMtxCatF(arg56, arg6, arg66);
+            guMtxF2L(arg66, &model->mtx);
+            func_8011F304(model->animModelID, &model->mtx);
+        }
+    }
+}
 
 ApiStatus func_802CCCB0(ScriptInstance* script, s32 isInitialCall) {
     if (!gGameStatusPtr->isBattle) {
@@ -704,7 +1016,28 @@ ApiStatus func_802CD418(ScriptInstance* script, s32 isInitialCall) {
     return ApiStatus_DONE2;
 }
 
-INCLUDE_ASM(s32, "evt/cam_api", func_802CD4B4);
+
+void func_802CD4B4(void) {
+    s32 i;
+
+    if (!gGameStatusPtr->isBattle) {
+        gCurrentMeshAnimationListPtr = gWorldMeshAnimationList;
+    } else {
+        gCurrentMeshAnimationListPtr = gBattleMeshAnimationList;
+    }
+
+    for (i = 0; i < MAX_ANIMATED_MESHES; i++) {
+        (*gCurrentMeshAnimationListPtr)[i] = heap_malloc(0x70);
+
+        if ((*gCurrentMeshAnimationListPtr)[i] == NULL) {
+            {} while(1);
+        }
+
+        (*gCurrentMeshAnimationListPtr)[i]->animModelID = -1;
+    }
+
+    create_dynamic_entity_world(func_802CCAC0, draw_anim_models);
+}
 
 void func_802CD57C(void) {
     if (!gGameStatusPtr->isBattle) {
@@ -714,12 +1047,92 @@ void func_802CD57C(void) {
     }
 }
 
-INCLUDE_ASM(s32, "evt/cam_api", func_802CD5C0);
+ApiStatus func_802CD5C0(ScriptInstance *script, s32 isInitialCall) {
+    Bytecode *args = script->ptrReadPos;
+    s32 index = get_variable(script, *args++);
+    s32 var2 = get_variable(script, *args++);
+    s32 var3 = *args++;
+    s32 var4 = *args++;
+    s32 var5 = *args++;
+    AnimatedModel* model = (*gCurrentMeshAnimationListPtr)[index];
+    AnimatedMesh* animMesh = get_anim_mesh(model->animModelID);
+    Unk_AnimatedMesh_struct_at_unk_10* temp_v0 = (Unk_AnimatedMesh_struct_at_unk_10*)func_8011FF98(animMesh, var2);
+    f32 x, y, z;
 
-INCLUDE_ASM(s32, "evt/cam_api", func_802CD6E0);
+    guMtxXFML(&model->mtx, temp_v0->unk_90, temp_v0->unk_94,temp_v0->unk_98, &x, &y, &z);
+    set_variable(script, var3, x);
+    set_variable(script, var4, y);
+    set_variable(script, var5, z);
+    return ApiStatus_DONE2;
+}
 
-INCLUDE_ASM(s32, "evt/cam_api", func_802CD7D8);
+ApiStatus func_802CD6E0(ScriptInstance *script, s32 isInitialCall) {
+    Bytecode *args = script->ptrReadPos;
+    s32 index = get_variable(script, *args++);
+    s32 var2 = get_variable(script, *args++);
+    s32 var3 = *args++;
+    s32 var4 = *args++;
+    s32 var5 = *args++;
+    AnimatedModel* model = (*gCurrentMeshAnimationListPtr)[index];
+    AnimatedMesh* animMesh = get_anim_mesh(model->animModelID);
+    Unk_AnimatedMesh_struct_at_unk_10* temp_v0 = (Unk_AnimatedMesh_struct_at_unk_10*)func_8011FF98(animMesh, var2);
 
-INCLUDE_ASM(s32, "evt/cam_api", func_802CD8F8);
+    set_variable(script, var3, temp_v0->unk_9C);
+    set_variable(script, var4, temp_v0->unk_A0);
+    set_variable(script, var5, temp_v0->unk_A4);
+    return ApiStatus_DONE2;
+}
 
-INCLUDE_ASM(s32, "evt/cam_api", func_802CD9F0);
+ApiStatus func_802CD7D8(ScriptInstance *script, s32 isInitialCall) {
+    Bytecode *args = script->ptrReadPos;
+    s32 index = get_variable(script, *args++);
+    s32 var2 = get_variable(script, *args++);
+    s32 var3 = *args++;
+    s32 var4 = *args++;
+    s32 var5 = *args++;
+    AnimatedModel* model = (*gCurrentMeshAnimationListPtr)[index];
+    AnimatedMesh* animMesh = get_anim_mesh(model->animModelID);
+    Unk_AnimatedMesh_struct_at_unk_10* temp_v0 = (Unk_AnimatedMesh_struct_at_unk_10*)func_8011FF74(animMesh, var2);
+    f32 x, y, z;
+
+    guMtxXFML(&model->mtx, temp_v0->unk_90, temp_v0->unk_94,temp_v0->unk_98, &x, &y, &z);
+    set_variable(script, var3, x);
+    set_variable(script, var4, y);
+    set_variable(script, var5, z);
+    return ApiStatus_DONE2;
+}
+
+ApiStatus func_802CD8F8(ScriptInstance *script, s32 isInitialCall) {
+    Bytecode *args = script->ptrReadPos;
+    s32 index = get_variable(script, *args++);
+    s32 var2 = get_variable(script, *args++);
+    s32 var3 = *args++;
+    s32 var4 = *args++;
+    s32 var5 = *args++;
+    AnimatedModel* model = (*gCurrentMeshAnimationListPtr)[index];
+    AnimatedMesh* animMesh = get_anim_mesh(model->animModelID);
+    Unk_AnimatedMesh_struct_at_unk_10* temp_v0 = (Unk_AnimatedMesh_struct_at_unk_10*)func_8011FF74(animMesh, var2);
+
+    set_variable(script, var3, temp_v0->unk_9C);
+    set_variable(script, var4, temp_v0->unk_A0);
+    set_variable(script, var5, temp_v0->unk_A4);
+    return ApiStatus_DONE2;
+}
+
+ApiStatus func_802CD9F0(ScriptInstance *script, s32 isInitialCall) {
+    Bytecode *args = script->ptrReadPos;
+    s32 index = get_variable(script, *args++);
+    s32 var2 = get_variable(script, *args++);
+    s32 var3 = *args++;
+    s32 var4 = get_variable(script, *args++);
+    AnimatedModel* model = (*gCurrentMeshAnimationListPtr)[index];
+    AnimatedMesh* animMesh = get_anim_mesh(model->animModelID);
+    Unk_AnimatedMesh_struct_at_unk_10* temp_v0 = (Unk_AnimatedMesh_struct_at_unk_10*)func_8011FF98(animMesh, var2);
+
+    if (var4 != 0) {
+        temp_v0->unk_F4 |= var3;
+    } else {
+        temp_v0->unk_F4 &= ~var3;
+    }
+    return ApiStatus_DONE2;
+}

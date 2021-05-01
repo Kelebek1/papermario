@@ -90,6 +90,19 @@ INCLUDE_ASM(s32, "world/area_kkj/kkj_19/AF7C00", func_80240B8C_AF84DC);
 
 INCLUDE_ASM(s32, "world/area_kkj/kkj_19/AF7C00", func_80240C10_AF8560);
 
-INCLUDE_ASM(s32, "world/area_kkj/kkj_19/AF7C00", func_80240C4C_AF859C);
+ApiStatus func_80240C4C_AF859C(ScriptInstance *script, s32 isInitialCall) {
+    if (isInitialCall) {
+        script->functionTemp[1].s = 0;
+    }
+
+    script->functionTemp[1].s += 16;
+    if (script->functionTemp[1].s > 255) {
+        script->functionTemp[1].s = 255;
+    }
+
+    set_transition_stencil_zoom_0(0, script->functionTemp[1].s);
+
+    return (script->functionTemp[1].s == 255) * ApiStatus_DONE2;
+}
 
 INCLUDE_ASM(s32, "world/area_kkj/kkj_19/AF7C00", func_80240CB4_AF8604);

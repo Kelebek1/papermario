@@ -546,15 +546,7 @@ typedef struct Camera {
     /* 0x4A0 */ char unk_4A0[0x10];
     /* 0x4B0 */ Vec3f movePos;
     /* 0x4BC */ char unk_4BC[28];
-    CameraController controller;
-    ///* 0x4D8 */ s32 controllerType;
-    ///* 0x4DC */ f32 controllerBoomLen;
-    ///* 0x4E0 */ f32 controllerBoomPitch;
-    ///* 0x4E4 */ Vec3f posA;
-    ///* 0x4F0 */ Vec3f posB;
-    ///* 0x4FC */ f32 controllerViewPitch;
-    ///* 0x500 */ s32 unk_500;
-    
+    /* 0x4D8 */ CameraController controller;
     /* 0x504 */ s16 boolTargetPlayer;
     /* 0x506 */ u16 unk_506;
     /* 0x508 */ f32 panPhase;
@@ -801,20 +793,36 @@ typedef struct Model {
 
 typedef Model* ModelList[MAX_MODELS];
 
+typedef struct {
+    char unk_00[0x4];
+    s32 unk_04[1];
+    char unk_08[0x88];
+    f32 unk_90;
+    f32 unk_94;
+    f32 unk_98;
+    f32 unk_9C;
+    f32 unk_A0;
+    f32 unk_A4;
+    char unk_A8[0x4C];
+    u16 unk_F4;
+    char unk_F6[0x6];
+    s32 unk_FC;
+} Unk_AnimatedMesh_struct_at_unk_10;
+
 typedef struct AnimatedMesh {
     /* 0x000 */ s32 flags;
     /* 0x004 */ u8 renderMode;
-    /* 0x005 */ char unk_05[3];
     /* 0x008 */ u32* animation1;
     /* 0x00C */ u32* animation2;
-    /* 0x010 */ char unk_10[136];
+    /* 0x010 */ UNK_PTR unk_10;
+    /* 0x014 */ char unk_14[0x84];
     /* 0x098 */ struct Matrix4s mtx;
-    /* 0x0D8 */ char unk_D8[500];
+    /* 0x0D8 */ char unk_D8[0x1F4];
     /* 0x2CC */ s32 time;
-    /* 0x2D0 */ char unk_2D0[4];
+    /* 0x2D0 */ char unk_2D0[0x4];
     /* 0x2D4 */ s32 unk_2D4;
     /* 0x2D8 */ s32 unk_2D8;
-    /* 0x2DC */ char unk_2DC[4];
+    /* 0x2DC */ char unk_2DC[0x4];
 } AnimatedMesh; // size = 0x2E0
 
 typedef AnimatedMesh* AnimatedMeshList[MAX_ANIMATED_MESHES];

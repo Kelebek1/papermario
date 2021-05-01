@@ -571,7 +571,20 @@ INCLUDE_ASM(s32, "world/area_mac/mac_01/8017D0", func_802446AC_804F2C);
 
 #include "world/common/UnkPositionFunc.inc.c"
 
-INCLUDE_ASM(s32, "world/area_mac/mac_01/8017D0", func_802447E0_805060);
+ApiStatus func_802447E0_805060(ScriptInstance *script, s32 isInitialCall) {
+    if (isInitialCall) {
+        script->functionTemp[1].s = 0;
+    }
+
+    script->functionTemp[1].s += 10;
+    if (script->functionTemp[1].s > 255) {
+        script->functionTemp[1].s = 255;
+    }
+
+    set_transition_stencil_zoom_0(0, script->functionTemp[1].s);
+
+    return (script->functionTemp[1].s == 255) * ApiStatus_DONE2;
+}
 
 INCLUDE_ASM(s32, "world/area_mac/mac_01/8017D0", func_80244848_8050C8);
 
