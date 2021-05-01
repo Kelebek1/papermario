@@ -8,7 +8,13 @@ INCLUDE_ASM(s32, "world/area_hos/hos_05/A2AAC0", func_80240D54_A2AF94);
 
 INCLUDE_ASM(s32, "world/area_hos/hos_05/A2AAC0", func_80240DA0_A2AFE0);
 
-INCLUDE_ASM(s32, "world/area_hos/hos_05/A2AAC0", func_80240DF8_A2B038);
+ApiStatus func_80240DF8_A2B038(ScriptInstance *script, s32 isInitialCall) {
+    if ((u8)gGameStatusPtr->creditsViewportMode < 5) {
+        gGameStatusPtr->creditsViewportMode++;
+        begin_state_intro();
+    }
+    return ApiStatus_DONE1;
+}
 
 INCLUDE_ASM(s32, "world/area_hos/hos_05/A2AAC0", func_80240E30_A2B070);
 
@@ -20,7 +26,26 @@ INCLUDE_ASM(s32, "world/area_hos/hos_05/A2AAC0", func_80240F88_A2B1C8);
 
 INCLUDE_ASM(s32, "world/area_hos/hos_05/A2AAC0", func_80240FE0_A2B220);
 
-INCLUDE_ASM(s32, "world/area_hos/hos_05/A2AAC0", func_80241044_A2B284);
+void func_80241044_A2B284(f32 arg0, f32 arg1, f32 arg2, f32 arg3, f32 *arg4) {
+    f32 temp_f2 = arg1 - arg2;
+    f32 temp_f0 = arg1 - arg0;
+
+    if (temp_f0 > 0.0f) {
+        if (temp_f2 < 0.0f) {
+            *arg4 = arg1;
+        } else if (arg3 < temp_f2) {
+            *arg4 += arg3;
+        } else {
+            *arg4 += temp_f2;
+        }
+    } else if (temp_f2 > 0.0f) {
+        *arg4 = arg1;
+    } else if (temp_f2 < -arg3) {
+        *arg4 -= arg3;
+    } else {
+        *arg4 += temp_f2;
+    }
+}
 
 INCLUDE_ASM(s32, "world/area_hos/hos_05/A2AAC0", func_802410E4_A2B324);
 
